@@ -172,8 +172,8 @@ const StudyPlannerPage = () => {
           <CardContent className="space-y-3 text-sm">
             <ScrollArea className="h-[360px] rounded-xl border border-primary/10 bg-background/40 p-4 text-sm">
               {plan ? (
-                <article className="max-w-none whitespace-pre-wrap text-[0.86rem] leading-relaxed text-foreground">
-                  {plan}
+                <article className="prose prose-sm dark:prose-invert max-w-none text-foreground prose-headings:text-primary prose-headings:font-bold prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2 prose-strong:text-foreground prose-li:marker:text-primary/60 prose-ul:space-y-1 prose-p:leading-relaxed">
+                  <ReactMarkdown>{plan}</ReactMarkdown>
                 </article>
               ) : (
                 <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-muted-foreground">
