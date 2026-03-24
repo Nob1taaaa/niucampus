@@ -152,16 +152,6 @@ const Auth = () => {
                   {googleLoading ? "Connecting..." : "Continue with Google"}
                 </Button>
 
-                {/* Phone button */}
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full h-11 rounded-xl border-border text-foreground hover:bg-secondary gap-3"
-                  onClick={() => setMode("phone")}
-                >
-                  📱 Continue with Phone
-                </Button>
-
                 <div className="flex items-center gap-3">
                   <Separator className="flex-1" />
                   <span className="text-xs text-muted-foreground">or</span>
