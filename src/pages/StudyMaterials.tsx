@@ -58,7 +58,7 @@ const StudyMaterialsPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  useEffect(() => { if (user) loadMaterials(); }, [user]);
+  useEffect(() => { if (user) { loadMaterials(); loadBookmarks(); } }, [user]);
 
   const loadMaterials = async () => {
     try {
