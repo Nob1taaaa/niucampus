@@ -238,6 +238,14 @@ const StudyMaterialsPage = () => {
             <Tab id="cn" label="🌐 CN" />
             <Tab id="os" label="💻 OS" />
             <Tab id="ai/ml" label="🤖 AI/ML" />
+            <Tab id="commerce" label="📊 Commerce" />
+            <Tab id="law" label="⚖️ Law" />
+            <Tab id="medical" label="🩺 Medical" />
+            <Tab id="design" label="🎨 Design" />
+            <Tab id="math" label="📐 Math" />
+            <Tab id="economics" label="💹 Economics" />
+            <Tab id="psychology" label="🧠 Psychology" />
+            <Tab id="biology" label="🧬 Biology" />
             <button
               onClick={() => setShowSaved(!showSaved)}
               className={`inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[0.7rem] font-medium transition-all ${
