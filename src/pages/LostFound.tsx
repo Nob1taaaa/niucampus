@@ -75,6 +75,15 @@ const LostFoundPage = () => {
     } finally { setLoading(false); }
   };
 
+  const loadUserChats = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("lost_found_chats")
+      .select("post_id")
+      .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`);
+    if (data) setUserChatPostIds(data.map((c) => c.post_id));
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!user || !type || !title.trim() || !location.trim() || !description.trim()) {
