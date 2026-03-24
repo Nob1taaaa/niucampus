@@ -228,6 +228,16 @@ const StudyMaterialsPage = () => {
             <Tab id="cn" label="🌐 CN" />
             <Tab id="os" label="💻 OS" />
             <Tab id="ai/ml" label="🤖 AI/ML" />
+            <button
+              onClick={() => setShowSaved(!showSaved)}
+              className={`inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[0.7rem] font-medium transition-all ${
+                showSaved
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-primary/8 text-muted-foreground hover:bg-primary/15 hover:text-foreground border border-primary/15"
+              }`}
+            >
+              <Bookmark className="h-3 w-3" /> Saved
+            </button>
           </div>
           <div className="relative max-w-xs w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
