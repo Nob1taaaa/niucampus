@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PageHeader from "@/components/PageHeader";
+import { moderateContent } from "@/lib/moderation";
 
 interface StudyGroup {
   id: string; creator_id: string; title: string; description: string | null;
@@ -88,6 +89,12 @@ const StudyGroupsPage = () => {
       toast({ title: "Missing fields", description: "Title and subject are required.", variant: "destructive" }); return;
     }
     try {
+      const contentToCheck = `${form.title} ${form.description} ${form.subject} ${form.schedule}`;
+      const modResult = await moderateContent(contentToCheck, "study_group");
+      if (!modResult.safe) {
+        toast({ title: "⚠️ Content not allowed", description: modResult.reason || "Please use appropriate language.", variant: "destructive" });
+        return;
+      }
       const { data, error } = await supabase.from("study_groups").insert({
         creator_id: user.id, title: form.title.trim(), description: form.description.trim() || null,
         subject: form.subject.trim(), schedule: form.schedule.trim() || null, max_members: parseInt(form.max_members) || 10,

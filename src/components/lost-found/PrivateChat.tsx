@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, MapPin, Loader2, MessageCircle, Calendar, CheckCheck, Clock } from "lucide-react";
+import { moderateContent } from "@/lib/moderation";
 
 interface Message {
   id: string;
@@ -75,6 +76,16 @@ const PrivateChat = ({ open, onOpenChange, chatId, userId, postTitle, onItemRetu
   const sendMessage = async (content: string, type = "text", metadata: any = null) => {
     if (!content.trim()) return;
     setSending(true);
+
+    // Moderate chat messages (skip system messages like return confirmations)
+    if (type === "text") {
+      const modResult = await moderateContent(content.trim(), "chat");
+      if (!modResult.safe) {
+        toast({ title: "⚠️ Message not allowed", description: modResult.reason || "Please keep messages respectful.", variant: "destructive" });
+        setSending(false);
+        return;
+      }
+    }
 
     // Optimistic: add message immediately so user sees it
     const tempId = `pending-${Date.now()}`;

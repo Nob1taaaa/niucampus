@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import PageHeader from "@/components/PageHeader";
+import { moderateContent } from "@/lib/moderation";
 
 const QAPage = () => {
   const { toast } = useToast();
@@ -29,6 +30,13 @@ const QAPage = () => {
       return;
     }
     lastSentRef.current = now;
+
+    // Content moderation
+    const modResult = await moderateContent(trimmed, "qa");
+    if (!modResult.safe) {
+      toast({ title: "⚠️ Question not allowed", description: modResult.reason || "Please keep questions appropriate.", variant: "destructive" });
+      return;
+    }
 
     const userMessage = { role: "user" as const, content: trimmed };
     const nextMessages = [...messages, userMessage];
