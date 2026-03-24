@@ -14,6 +14,7 @@ const navLinks = [
   { path: "/study-groups", label: "Study Groups", icon: Users },
   { path: "/qa", label: "Q&A", icon: HelpCircle },
   { path: "/planner", label: "Planner", icon: BookOpen },
+  { path: "/materials", label: "Materials", icon: FileText },
 ];
 
 const Navbar = () => {
