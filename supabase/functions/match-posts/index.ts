@@ -30,11 +30,11 @@ serve(async (req) => {
     }
 
     // Use AI to find matches
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "You are a lost & found matching assistant. Compare the new post against existing posts. Return ONLY matching post IDs with similarity scores (0-1). Respond with a JSON array like [{\"id\":\"uuid\",\"score\":0.8}]. Consider item descriptions, locations, and timing. Return empty array [] if no matches." },
           { role: "user", content: `New ${type} post:\nTitle: ${title}\nDescription: ${description}\nLocation: ${location}\n\nExisting ${oppositeType} posts:\n${JSON.stringify(existingPosts)}` }
