@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import type { Tables } from "@/integrations/supabase/types";
 import PageHeader from "@/components/PageHeader";
+import { moderateContent } from "@/lib/moderation";
 
 type Event = Tables<"events">;
 
