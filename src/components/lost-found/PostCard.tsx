@@ -16,6 +16,7 @@ interface PostCardProps {
     created_at: string;
   };
   userId: string | undefined;
+  userChatPostIds?: string[];
   onClaim: (post: any) => void;
   onRemove: (postId: string) => void;
   onViewClaims: (post: any) => void;
