@@ -158,7 +158,6 @@ const StudyPlannerPage = () => {
               )}
               <p className="w-full mt-1.5 text-[0.65rem] text-muted-foreground">Powered by AI — uses your inputs only. Limited to 5 plans/day per student.</p>
             </div>
-            </div>
           </CardContent>
         </Card>
 
