@@ -283,9 +283,22 @@ const StudyMaterialsPage = () => {
                         {material.title}
                       </CardTitle>
                     </div>
-                    <Badge variant="outline" className="border-primary/20 bg-primary/8 text-[0.6rem] text-foreground font-semibold shrink-0">
-                      {material.type === "file" ? "File" : "Link"}
-                    </Badge>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => toggleBookmark(material.id)}
+                        className={`h-7 w-7 rounded-full flex items-center justify-center transition-all ${
+                          isBookmarked
+                            ? "bg-primary/15 text-primary"
+                            : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                        }`}
+                        title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+                      >
+                        <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-primary" : ""}`} />
+                      </button>
+                      <Badge variant="outline" className="border-primary/20 bg-primary/8 text-[0.6rem] text-foreground font-semibold">
+                        {material.type === "file" ? "File" : "Link"}
+                      </Badge>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs">
