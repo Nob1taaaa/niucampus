@@ -16,6 +16,7 @@ const LostFoundPage = lazy(() => import("./pages/LostFound"));
 const StudyGroupsPage = lazy(() => import("./pages/StudyGroups"));
 const QAPage = lazy(() => import("./pages/QA"));
 const StudyPlannerPage = lazy(() => import("./pages/StudyPlanner"));
+const StudyMaterialsPage = lazy(() => import("./pages/StudyMaterials"));
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/study-groups" element={<Layout><StudyGroupsPage /></Layout>} />
             <Route path="/qa" element={<Layout><QAPage /></Layout>} />
             <Route path="/planner" element={<Layout><StudyPlannerPage /></Layout>} />
+            <Route path="/materials" element={<Layout><StudyMaterialsPage /></Layout>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

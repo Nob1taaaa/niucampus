@@ -608,6 +608,54 @@ export type Database = {
         }
         Relationships: []
       }
+      study_materials: {
+        Row: {
+          created_at: string
+          description: string | null
+          download_count: number
+          external_url: string | null
+          file_name: string | null
+          file_size: number | null
+          file_url: string | null
+          id: string
+          subject: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          external_url?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          id?: string
+          subject?: string
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          external_url?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          id?: string
+          subject?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string

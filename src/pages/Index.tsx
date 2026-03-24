@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, MessageCircle, Users, CalendarDays, HelpCircle, Sparkles, BookOpen, MapPin } from "lucide-react";
+import { ArrowRight, MessageCircle, Users, CalendarDays, HelpCircle, Sparkles, BookOpen, MapPin, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +46,11 @@ const Index = () => {
       icon: BookOpen, emoji: "🎯", title: "Study Planner",
       desc: "AI creates a personalized weekly study plan",
       path: "/planner", color: "text-accent-foreground",
+    },
+    {
+      icon: FileText, emoji: "📚", title: "Study Materials",
+      desc: "Upload & share notes, PDFs, and useful links",
+      path: "/materials", color: "text-primary",
     },
   ];
 

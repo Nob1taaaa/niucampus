@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Menu, X, Home, CalendarDays, Search as SearchIcon, Users, HelpCircle, BookOpen, MapPin } from "lucide-react";
+import { LogOut, Menu, X, Home, CalendarDays, Search as SearchIcon, Users, HelpCircle, BookOpen, MapPin, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import logoImage from "@/assets/logo.png";
@@ -14,6 +14,7 @@ const navLinks = [
   { path: "/study-groups", label: "Study Groups", icon: Users },
   { path: "/qa", label: "Q&A", icon: HelpCircle },
   { path: "/planner", label: "Planner", icon: BookOpen },
+  { path: "/materials", label: "Materials", icon: FileText },
 ];
 
 const Navbar = () => {
