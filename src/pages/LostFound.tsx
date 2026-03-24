@@ -320,6 +320,7 @@ const LostFoundPage = () => {
                 key={post.id}
                 post={post}
                 userId={user?.id}
+                userChatPostIds={userChatPostIds}
                 onClaim={handleClaim}
                 onRemove={handleRemovePost}
                 onViewClaims={handleViewClaims}
