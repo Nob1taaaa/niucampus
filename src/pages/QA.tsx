@@ -156,7 +156,14 @@ const QAPage = () => {
               className="min-h-[60px] sm:min-h-[80px] resize-none text-[0.8rem] sm:text-sm rounded-xl border-primary/15"
             />
             <div className="flex items-center justify-between">
-              <p className="text-[0.6rem] sm:text-xs text-muted-foreground hidden sm:block">Press Enter to send</p>
+              <div className="flex items-center gap-2">
+                <p className="text-[0.6rem] sm:text-xs text-muted-foreground hidden sm:block">Press Enter to send</p>
+                {remainingToday !== null && (
+                  <Badge variant="outline" className="text-[0.6rem] border-primary/20 bg-primary/5 text-primary">
+                    {remainingToday} left today
+                  </Badge>
+                )}
+              </div>
               <Button
                 size="sm"
                 className="h-8 sm:h-9 rounded-full px-4 sm:px-5 text-xs sm:text-sm ml-auto"
