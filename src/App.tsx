@@ -16,6 +16,7 @@ const LostFoundPage = lazy(() => import("./pages/LostFound"));
 const StudyGroupsPage = lazy(() => import("./pages/StudyGroups"));
 const QAPage = lazy(() => import("./pages/QA"));
 const StudyPlannerPage = lazy(() => import("./pages/StudyPlanner"));
+const StudyMaterialsPage = lazy(() => import("./pages/StudyMaterials"));
 
 const queryClient = new QueryClient();
 
