@@ -73,6 +73,25 @@ const StudyMaterialsPage = () => {
     } finally { setLoading(false); }
   };
 
+  const loadBookmarks = async () => {
+    if (!user) return;
+    const { data } = await supabase.from("study_material_bookmarks").select("material_id").eq("user_id", user.id);
+    if (data) setBookmarkedIds(new Set(data.map((d) => d.material_id)));
+  };
+
+  const toggleBookmark = async (materialId: string) => {
+    if (!user) return;
+    if (bookmarkedIds.has(materialId)) {
+      await supabase.from("study_material_bookmarks").delete().eq("user_id", user.id).eq("material_id", materialId);
+      setBookmarkedIds((prev) => { const n = new Set(prev); n.delete(materialId); return n; });
+      toast({ title: "Bookmark removed" });
+    } else {
+      await supabase.from("study_material_bookmarks").insert({ user_id: user.id, material_id: materialId });
+      setBookmarkedIds((prev) => new Set(prev).add(materialId));
+      toast({ title: "Bookmarked!" });
+    }
+  };
+
   const handleUpload = async () => {
     if (!user || !form.title.trim() || !form.subject.trim()) {
       toast({ title: "Missing fields", description: "Title and subject are required.", variant: "destructive" });
