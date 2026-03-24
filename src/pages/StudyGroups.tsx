@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PageHeader from "@/components/PageHeader";
+import { moderateContent } from "@/lib/moderation";
 
 interface StudyGroup {
   id: string; creator_id: string; title: string; description: string | null;
