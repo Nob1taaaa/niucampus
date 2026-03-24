@@ -56,7 +56,7 @@ const Footer = () => {
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">Built With</p>
             <div className="flex flex-wrap gap-1.5">
-              {["React", "TypeScript", "Tailwind CSS", "Supabase", "AI"].map((tech) => (
+              {["React", "TypeScript", "Tailwind CSS", "Lovable Cloud", "AI"].map((tech) => (
                 <span
                   key={tech}
                   className="inline-flex items-center gap-1 rounded-full border border-primary/15 bg-primary/5 px-2.5 py-1 text-[0.65rem] text-muted-foreground"
