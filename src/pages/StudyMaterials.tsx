@@ -266,6 +266,7 @@ const StudyMaterialsPage = () => {
         ) : (
           filteredMaterials.map((material) => {
             const isOwner = material.user_id === user?.id;
+            const isBookmarked = bookmarkedIds.has(material.id);
 
             return (
               <Card key={material.id} className="hover-scale group border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden transition-all hover:shadow-md hover:border-primary/25">
