@@ -18,6 +18,7 @@ import PrivateChat from "@/components/lost-found/PrivateChat";
 import MatchNotification from "@/components/lost-found/MatchNotification";
 import ReunionFeed from "@/components/lost-found/ReunionFeed";
 import confetti from "canvas-confetti";
+import { moderateContent } from "@/lib/moderation";
 
 interface LostFoundPost {
   id: string; user_id: string; type: string; title: string; location: string;
