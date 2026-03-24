@@ -175,6 +175,7 @@ const StudyMaterialsPage = () => {
   };
 
   const filteredMaterials = materials.filter((m) => {
+    if (showSaved && !bookmarkedIds.has(m.id)) return false;
     const matchesTab = tab === "all" || m.subject.toLowerCase() === tab.toLowerCase();
     const matchesSearch = !search || m.title.toLowerCase().includes(search.toLowerCase()) || m.description?.toLowerCase().includes(search.toLowerCase());
     return matchesTab && matchesSearch;
