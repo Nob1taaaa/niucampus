@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, MapPin, Loader2, MessageCircle, Calendar, CheckCheck, Clock } from "lucide-react";
+import { moderateContent } from "@/lib/moderation";
 
 interface Message {
   id: string;
