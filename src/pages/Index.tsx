@@ -47,6 +47,11 @@ const Index = () => {
       desc: "AI creates a personalized weekly study plan",
       path: "/planner", color: "text-accent-foreground",
     },
+    {
+      icon: FileText, emoji: "📚", title: "Study Materials",
+      desc: "Upload & share notes, PDFs, and useful links",
+      path: "/materials", color: "text-primary",
+    },
   ];
 
   return (
