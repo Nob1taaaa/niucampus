@@ -51,6 +51,7 @@ const LostFoundPage = () => {
   const [activeChatTitle, setActiveChatTitle] = useState("");
   const [matchCount, setMatchCount] = useState(0);
   const [matchPostId, setMatchPostId] = useState<string | null>(null);
+  const [userChatPostIds, setUserChatPostIds] = useState<string[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
