@@ -90,7 +90,12 @@ const LostFoundPage = () => {
     if (!user || !type || !title.trim() || !location.trim() || !description.trim()) {
       toast({ variant: "destructive", title: "Missing information", description: "Please fill in all required fields." }); return;
     }
-    try {
+      const contentToCheck = `${title} ${description} ${location} ${when}`;
+      const modResult = await moderateContent(contentToCheck, "lost_found");
+      if (!modResult.safe) {
+        toast({ title: "⚠️ Content not allowed", description: modResult.reason || "Please use appropriate language.", variant: "destructive" });
+        return;
+      }
       const insertData: any = {
         user_id: user.id, type, title: title.trim(), location: location.trim(),
         approximate_time: when.trim() || null, description: description.trim(),
