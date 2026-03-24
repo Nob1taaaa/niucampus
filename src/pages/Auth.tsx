@@ -112,10 +112,10 @@ const Auth = () => {
         <Card className="border-border bg-card shadow-sm rounded-2xl">
           <CardHeader className="pb-4 pt-6 text-center">
             <CardTitle className="text-lg font-semibold">
-              {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create account" : "Reset password"}
+              {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create account" : mode === "forgot" ? "Reset password" : "Phone sign-in"}
             </CardTitle>
             <CardDescription className="text-sm">
-              {mode === "signin" ? "Sign in to continue" : mode === "signup" ? "Sign up to get started" : "We'll email you a reset link"}
+              {mode === "signin" ? "Sign in to continue" : mode === "signup" ? "Sign up to get started" : mode === "forgot" ? "We'll email you a reset link" : "We'll send you a verification code"}
             </CardDescription>
           </CardHeader>
 
