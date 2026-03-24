@@ -34,6 +34,9 @@ const StudyPlannerPage = () => {
   const [extraContext, setExtraContext] = useState("");
   const [plan, setPlan] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [remainingToday, setRemainingToday] = useState<number | null>(null);
+  const lastGenRef = useRef(0);
+  const COOLDOWN_MS = 5000;
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
