@@ -30,7 +30,17 @@ interface StudyMaterial {
   created_at: string;
 }
 
-const SUBJECTS = ["General", "DSA", "DBMS", "CN", "OS", "OOPs", "Web Dev", "AI/ML", "Math", "Physics", "Chemistry", "English", "Other"];
+const SUBJECTS = [
+  "General", "DSA", "DBMS", "CN", "OS", "OOPs", "Web Dev", "AI/ML",
+  "Math", "Physics", "Chemistry", "English",
+  "Commerce", "Accounting", "Economics", "Business Studies",
+  "Law", "Political Science", "Psychology", "Sociology",
+  "History", "Geography", "Philosophy",
+  "Biology", "Biotechnology", "Medical",
+  "Mechanical", "Civil", "Electrical", "Electronics",
+  "Design", "Architecture", "Fine Arts",
+  "Other"
+];
 
 const StudyMaterialsPage = () => {
   const { toast } = useToast();
@@ -200,6 +210,14 @@ const StudyMaterialsPage = () => {
     cn: "from-primary/70 to-accent-foreground/50",
     os: "from-destructive/70 to-destructive/30",
     "ai/ml": "from-primary/80 to-primary/40",
+    commerce: "from-primary/60 to-primary/30",
+    law: "from-accent-foreground/80 to-accent-foreground/40",
+    medical: "from-destructive/60 to-primary/40",
+    design: "from-primary/70 to-accent-foreground/60",
+    math: "from-primary/50 to-primary/25",
+    economics: "from-accent-foreground/70 to-primary/40",
+    psychology: "from-primary/65 to-accent-foreground/35",
+    biology: "from-primary/75 to-primary/35",
   };
 
   const getGradient = (subject: string) => {
@@ -228,6 +246,14 @@ const StudyMaterialsPage = () => {
             <Tab id="cn" label="🌐 CN" />
             <Tab id="os" label="💻 OS" />
             <Tab id="ai/ml" label="🤖 AI/ML" />
+            <Tab id="commerce" label="📊 Commerce" />
+            <Tab id="law" label="⚖️ Law" />
+            <Tab id="medical" label="🩺 Medical" />
+            <Tab id="design" label="🎨 Design" />
+            <Tab id="math" label="📐 Math" />
+            <Tab id="economics" label="💹 Economics" />
+            <Tab id="psychology" label="🧠 Psychology" />
+            <Tab id="biology" label="🧬 Biology" />
             <button
               onClick={() => setShowSaved(!showSaved)}
               className={`inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[0.7rem] font-medium transition-all ${
