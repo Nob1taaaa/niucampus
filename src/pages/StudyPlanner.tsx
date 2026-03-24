@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Target, Clock, BookOpen } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
+import ReactMarkdown from "react-markdown";
 import PageHeader from "@/components/PageHeader";
 
 const focusOptions = [
