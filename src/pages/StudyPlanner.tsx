@@ -59,11 +59,29 @@ const StudyPlannerPage = () => {
 
   const generatePlan = async () => {
     if (!hoursPerWeek.trim()) { toast({ title: "Add weekly hours", description: "Tell the assistant roughly how many hours you can give per week." }); return; }
+
+    const now = Date.now();
+    if (now - lastGenRef.current < COOLDOWN_MS) {
+      toast({ title: "Please wait ⏳", description: "Wait a few seconds before generating again." });
+      return;
+    }
+    lastGenRef.current = now;
+
     setIsGenerating(true); setPlan("");
-    const { data, error } = await supabase.functions.invoke<{ plan: string }>("study-planner", {
+    const { data, error } = await supabase.functions.invoke<{ plan: string; remainingToday?: number; dailyLimit?: boolean }>("study-planner", {
       body: { semester, targetRole, hoursPerWeek, focusAreas: selectedFocus, upcomingExams, extraContext },
     });
-    if (error) { toast({ title: "Could not generate plan", description: "The AI planner is unavailable right now.", variant: "destructive" }); setIsGenerating(false); return; }
+    if (error) {
+      const msg = typeof error === "object" && "message" in error ? error.message : "";
+      if (msg.includes("limit") || msg.includes("daily")) {
+        toast({ title: "Daily limit reached 📖", description: "You've used all study plans for today. Come back tomorrow!", variant: "destructive" });
+      } else {
+        toast({ title: "Could not generate plan", description: "The AI planner is unavailable right now.", variant: "destructive" });
+      }
+      setIsGenerating(false);
+      return;
+    }
+    if (data?.remainingToday !== undefined) setRemainingToday(data.remainingToday);
     if (data?.plan) setPlan(data.plan.trim());
     setIsGenerating(false);
   };
