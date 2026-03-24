@@ -210,6 +210,14 @@ const StudyMaterialsPage = () => {
     cn: "from-primary/70 to-accent-foreground/50",
     os: "from-destructive/70 to-destructive/30",
     "ai/ml": "from-primary/80 to-primary/40",
+    commerce: "from-primary/60 to-primary/30",
+    law: "from-accent-foreground/80 to-accent-foreground/40",
+    medical: "from-destructive/60 to-primary/40",
+    design: "from-primary/70 to-accent-foreground/60",
+    math: "from-primary/50 to-primary/25",
+    economics: "from-accent-foreground/70 to-primary/40",
+    psychology: "from-primary/65 to-accent-foreground/35",
+    biology: "from-primary/75 to-primary/35",
   };
 
   const getGradient = (subject: string) => {
