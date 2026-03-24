@@ -21,17 +21,37 @@ const QAPage = () => {
   const sendMessage = async () => {
     const trimmed = input.trim();
     if (!trimmed || isSending) return;
+
+    // Client-side cooldown to prevent spam
+    const now = Date.now();
+    if (now - lastSentRef.current < COOLDOWN_MS) {
+      toast({ title: "Slow down ⏳", description: "Please wait a few seconds between messages." });
+      return;
+    }
+    lastSentRef.current = now;
+
     const userMessage = { role: "user" as const, content: trimmed };
     const nextMessages = [...messages, userMessage];
     setMessages(nextMessages);
     setInput("");
     setIsSending(true);
-    const { data, error } = await supabase.functions.invoke<{ assistantMessage: string }>("qa-assistant", { body: { messages: nextMessages } });
+
+    const { data, error } = await supabase.functions.invoke<{ assistantMessage: string; remainingToday?: number; dailyLimit?: boolean }>("qa-assistant", { body: { messages: nextMessages } });
+
     if (error) {
-      toast({ title: "AI assistant error", description: "Unable to get a response. Try again.", variant: "destructive" });
+      const errorBody = typeof error === "object" && "message" in error ? error.message : "";
+      if (errorBody.includes("Daily limit") || errorBody.includes("daily")) {
+        toast({ title: "Daily limit reached 📚", description: "You've used all your questions for today. Come back tomorrow!", variant: "destructive" });
+      } else if (errorBody.includes("busy") || errorBody.includes("429")) {
+        toast({ title: "AI is busy ⏳", description: "Too many students asking right now. Wait 30 seconds.", variant: "destructive" });
+      } else {
+        toast({ title: "AI assistant error", description: "Unable to get a response. Try again.", variant: "destructive" });
+      }
       setIsSending(false);
       return;
     }
+
+    if (data?.remainingToday !== undefined) setRemainingToday(data.remainingToday);
     const reply = data?.assistantMessage?.trim();
     if (reply) setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     setIsSending(false);
