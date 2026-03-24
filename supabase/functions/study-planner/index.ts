@@ -38,67 +38,6 @@ Student profile:
   return `Create a personalised weekly study & placement plan.\n\n${userProfileSummary}`;
 }
 
-async function callAnthropic(prompt: string) {
-  const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-  if (!anthropicKey) throw new Error("ANTHROPIC_API_KEY missing");
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": anthropicKey,
-      "anthropic-version": "2023-06-01",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-3-5-sonnet-latest",
-      max_tokens: 2048,
-      system: systemPrompt,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`anthropic_${response.status}:${errorText}`);
-  }
-
-  const data = await response.json();
-  const text = data?.content?.[0]?.text?.trim();
-  if (!text) throw new Error("anthropic_empty_response");
-  return text;
-}
-
-async function callOpenAI(prompt: string) {
-  const openAIApiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!openAIApiKey) throw new Error("OPENAI_API_KEY missing");
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${openAIApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: 2048,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`openai_${response.status}:${errorText}`);
-  }
-
-  const data = await response.json();
-  const text = data?.choices?.[0]?.message?.content?.trim();
-  if (!text) throw new Error("openai_empty_response");
-  return text;
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -130,18 +69,48 @@ serve(async (req) => {
     const body = await req.json();
     const prompt = makeUserPrompt(body ?? {});
 
-    let plan = "";
-    let anthropicError: string | null = null;
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    try {
-      plan = await callAnthropic(prompt);
-    } catch (error) {
-      anthropicError = error instanceof Error ? error.message : "anthropic_unknown_error";
-      console.error("Anthropic failed, trying fallback:", anthropicError);
-      plan = await callOpenAI(prompt);
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: prompt },
+        ],
+        max_tokens: 2048,
+      }),
+    });
+
+    if (response.status === 429) {
+      return new Response(JSON.stringify({ error: "AI is busy, please try again in a moment." }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (response.status === 402) {
+      return new Response(JSON.stringify({ error: "AI usage limit reached. Please try again later." }), {
+        status: 402,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("AI gateway error:", response.status, errorText);
+      throw new Error(`AI gateway error: ${response.status}`);
     }
 
-    return new Response(JSON.stringify({ plan, providerWarning: anthropicError }), {
+    const data = await response.json();
+    const plan = data?.choices?.[0]?.message?.content?.trim();
+    if (!plan) throw new Error("Empty AI response");
+
+    return new Response(JSON.stringify({ plan }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
