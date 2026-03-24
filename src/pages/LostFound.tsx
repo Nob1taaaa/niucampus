@@ -146,6 +146,7 @@ const LostFoundPage = () => {
     setActiveChatId(chatId);
     setActiveChatTitle(claimsPost?.title || "Item");
     setChatOpen(true);
+    loadUserChats();
   };
 
   const handleOpenChat = async (postId: string) => {
