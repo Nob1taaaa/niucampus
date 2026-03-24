@@ -147,11 +147,17 @@ const StudyPlannerPage = () => {
               <Textarea id="extra" value={extraContext} onChange={(e) => setExtraContext(e.target.value)} placeholder="Mention lab-heavy weeks, backlogs, clubs, constraints..." className="min-h-[80px] resize-none rounded-xl border-primary/15" />
             </div>
 
-            <div className="pt-1">
+            <div className="pt-1 flex items-center gap-3 flex-wrap">
               <Button className="h-10 rounded-xl px-5 text-sm bg-gradient-to-r from-primary to-primary/80 shadow-[var(--shadow-glow)] hover:shadow-lg transition-shadow" onClick={generatePlan} disabled={isGenerating}>
                 {isGenerating ? "✨ Generating your plan…" : "🎯 Generate my weekly plan"}
               </Button>
-              <p className="mt-1.5 text-[0.65rem] text-muted-foreground">Powered by AI via Lovable Cloud — uses your inputs only.</p>
+              {remainingToday !== null && (
+                <Badge variant="outline" className="border-primary/20 bg-primary/5 text-[0.7rem] text-primary">
+                  {remainingToday} plans left today
+                </Badge>
+              )}
+              <p className="w-full mt-1.5 text-[0.65rem] text-muted-foreground">Powered by AI — uses your inputs only. Limited to 5 plans/day per student.</p>
+            </div>
             </div>
           </CardContent>
         </Card>
