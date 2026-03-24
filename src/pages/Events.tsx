@@ -108,6 +108,12 @@ const EventsPage = () => {
       toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" }); return;
     }
     try {
+      const contentToCheck = `${newEventForm.title} ${newEventForm.description} ${newEventForm.location} ${newEventForm.category}`;
+      const modResult = await moderateContent(contentToCheck, "event");
+      if (!modResult.safe) {
+        toast({ title: "⚠️ Content not allowed", description: modResult.reason || "Please use appropriate language.", variant: "destructive" });
+        return;
+      }
       const { data, error } = await supabase.from("events").insert({
         title: newEventForm.title.trim(), description: newEventForm.description.trim(),
         event_date: new Date(newEventForm.event_date).toISOString(), location: newEventForm.location.trim(),
