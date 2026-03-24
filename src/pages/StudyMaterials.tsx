@@ -30,7 +30,17 @@ interface StudyMaterial {
   created_at: string;
 }
 
-const SUBJECTS = ["General", "DSA", "DBMS", "CN", "OS", "OOPs", "Web Dev", "AI/ML", "Math", "Physics", "Chemistry", "English", "Other"];
+const SUBJECTS = [
+  "General", "DSA", "DBMS", "CN", "OS", "OOPs", "Web Dev", "AI/ML",
+  "Math", "Physics", "Chemistry", "English",
+  "Commerce", "Accounting", "Economics", "Business Studies",
+  "Law", "Political Science", "Psychology", "Sociology",
+  "History", "Geography", "Philosophy",
+  "Biology", "Biotechnology", "Medical",
+  "Mechanical", "Civil", "Electrical", "Electronics",
+  "Design", "Architecture", "Fine Arts",
+  "Other"
+];
 
 const StudyMaterialsPage = () => {
   const { toast } = useToast();
