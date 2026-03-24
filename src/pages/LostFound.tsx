@@ -63,7 +63,7 @@ const LostFoundPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  useEffect(() => { if (user) loadPosts(); }, [user]);
+  useEffect(() => { if (user) { loadPosts(); loadUserChats(); } }, [user]);
 
   const loadPosts = async () => {
     try {
