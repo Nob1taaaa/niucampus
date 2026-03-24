@@ -6,10 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-}
+const FUNCTION_NAME = "qa-assistant";
+const MAX_REQUESTS_PER_DAY = 20; // per student per day
+const CACHE_TTL_HOURS = 24;
 
 const systemPrompt =
   "You are a helpful, concise assistant for CSE students using an anonymous Q&A portal. " +
@@ -17,17 +16,28 @@ const systemPrompt =
   "Avoid writing very long essays; focus on 3-6 key points and concrete next steps. " +
   "If the question is unsafe or outside your scope, say that briefly and suggest a safe alternative.";
 
+// Simple hash for cache keys
+function simpleHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
+    // Auth check
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Authentication required" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -40,19 +50,65 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
       return new Response(JSON.stringify({ error: "Invalid or expired authentication token" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const { messages } = (await req.json()) as { messages?: ChatMessage[] };
+    const { messages } = await req.json();
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: "Missing messages array" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    // --- SERVICE ROLE client for rate limit & cache tables ---
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+
+    // --- RATE LIMITING: check daily usage ---
+    const { data: usageData } = await adminClient.rpc("get_user_ai_usage_today", {
+      _user_id: user.id,
+      _function_name: FUNCTION_NAME,
+    });
+
+    const todayCount = typeof usageData === "number" ? usageData : 0;
+    if (todayCount >= MAX_REQUESTS_PER_DAY) {
+      return new Response(JSON.stringify({
+        error: `Daily limit reached (${MAX_REQUESTS_PER_DAY} questions/day). Come back tomorrow! 📚`,
+        dailyLimit: true,
+      }), {
+        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- CACHE CHECK: look for cached response ---
+    const lastUserMsg = messages[messages.length - 1]?.content?.toLowerCase().trim() || "";
+    const cacheKey = `qa_${simpleHash(lastUserMsg)}`;
+
+    const { data: cached } = await adminClient
+      .from("ai_response_cache")
+      .select("response_text, created_at")
+      .eq("cache_key", cacheKey)
+      .single();
+
+    if (cached) {
+      const cacheAge = (Date.now() - new Date(cached.created_at).getTime()) / 3600000;
+      if (cacheAge < CACHE_TTL_HOURS) {
+        // Cache hit! Increment counter but don't count against rate limit
+        await adminClient
+          .from("ai_response_cache")
+          .update({ hit_count: 1 }) // just mark as used
+          .eq("cache_key", cacheKey);
+
+        return new Response(JSON.stringify({ assistantMessage: cached.response_text, cached: true }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // --- CALL AI (cheapest model for scale) ---
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -63,22 +119,20 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash-lite", // cheapest & fastest for high volume
         messages: [{ role: "system", content: systemPrompt }, ...messages],
-        max_tokens: 2048,
+        max_tokens: 1024, // keep responses concise to save tokens
       }),
     });
 
     if (response.status === 429) {
-      return new Response(JSON.stringify({ error: "AI is busy, please try again in a moment." }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return new Response(JSON.stringify({ error: "AI is busy right now. Please wait 30 seconds and try again. ⏳" }), {
+        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     if (response.status === 402) {
-      return new Response(JSON.stringify({ error: "AI usage limit reached. Please try again later." }), {
-        status: 402,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return new Response(JSON.stringify({ error: "AI service temporarily unavailable. Please try again later." }), {
+        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     if (!response.ok) {
@@ -91,16 +145,39 @@ serve(async (req) => {
     const assistantMessage = data?.choices?.[0]?.message?.content?.trim();
     if (!assistantMessage) throw new Error("Empty AI response");
 
-    return new Response(JSON.stringify({ assistantMessage }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // --- LOG USAGE (rate limit tracking) ---
+    await adminClient.from("ai_usage_log").insert({
+      user_id: user.id,
+      function_name: FUNCTION_NAME,
+    });
+
+    // --- CACHE RESPONSE for future students with same question ---
+    if (lastUserMsg.length > 10) {
+      await adminClient.from("ai_response_cache").upsert({
+        cache_key: cacheKey,
+        function_name: FUNCTION_NAME,
+        response_text: assistantMessage,
+        created_at: new Date().toISOString(),
+        hit_count: 0,
+      }, { onConflict: "cache_key" }).then(() => {});
+    }
+
+    // --- PERIODIC CLEANUP (1% chance per request) ---
+    if (Math.random() < 0.01) {
+      adminClient.rpc("cleanup_old_ai_usage").then(() => {});
+    }
+
+    return new Response(JSON.stringify({
+      assistantMessage,
+      remainingToday: MAX_REQUESTS_PER_DAY - todayCount - 1,
+    }), {
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("qa-assistant error:", errorMessage);
-    return new Response(JSON.stringify({ error: "AI provider error", details: errorMessage }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({ error: "Something went wrong. Please try again.", details: errorMessage }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

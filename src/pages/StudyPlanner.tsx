@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +34,9 @@ const StudyPlannerPage = () => {
   const [extraContext, setExtraContext] = useState("");
   const [plan, setPlan] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [remainingToday, setRemainingToday] = useState<number | null>(null);
+  const lastGenRef = useRef(0);
+  const COOLDOWN_MS = 5000;
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -56,11 +59,29 @@ const StudyPlannerPage = () => {
 
   const generatePlan = async () => {
     if (!hoursPerWeek.trim()) { toast({ title: "Add weekly hours", description: "Tell the assistant roughly how many hours you can give per week." }); return; }
+
+    const now = Date.now();
+    if (now - lastGenRef.current < COOLDOWN_MS) {
+      toast({ title: "Please wait ⏳", description: "Wait a few seconds before generating again." });
+      return;
+    }
+    lastGenRef.current = now;
+
     setIsGenerating(true); setPlan("");
-    const { data, error } = await supabase.functions.invoke<{ plan: string }>("study-planner", {
+    const { data, error } = await supabase.functions.invoke<{ plan: string; remainingToday?: number; dailyLimit?: boolean }>("study-planner", {
       body: { semester, targetRole, hoursPerWeek, focusAreas: selectedFocus, upcomingExams, extraContext },
     });
-    if (error) { toast({ title: "Could not generate plan", description: "The AI planner is unavailable right now.", variant: "destructive" }); setIsGenerating(false); return; }
+    if (error) {
+      const msg = typeof error === "object" && "message" in error ? error.message : "";
+      if (msg.includes("limit") || msg.includes("daily")) {
+        toast({ title: "Daily limit reached 📖", description: "You've used all study plans for today. Come back tomorrow!", variant: "destructive" });
+      } else {
+        toast({ title: "Could not generate plan", description: "The AI planner is unavailable right now.", variant: "destructive" });
+      }
+      setIsGenerating(false);
+      return;
+    }
+    if (data?.remainingToday !== undefined) setRemainingToday(data.remainingToday);
     if (data?.plan) setPlan(data.plan.trim());
     setIsGenerating(false);
   };
@@ -126,11 +147,16 @@ const StudyPlannerPage = () => {
               <Textarea id="extra" value={extraContext} onChange={(e) => setExtraContext(e.target.value)} placeholder="Mention lab-heavy weeks, backlogs, clubs, constraints..." className="min-h-[80px] resize-none rounded-xl border-primary/15" />
             </div>
 
-            <div className="pt-1">
+            <div className="pt-1 flex items-center gap-3 flex-wrap">
               <Button className="h-10 rounded-xl px-5 text-sm bg-gradient-to-r from-primary to-primary/80 shadow-[var(--shadow-glow)] hover:shadow-lg transition-shadow" onClick={generatePlan} disabled={isGenerating}>
                 {isGenerating ? "✨ Generating your plan…" : "🎯 Generate my weekly plan"}
               </Button>
-              <p className="mt-1.5 text-[0.65rem] text-muted-foreground">Powered by AI via Lovable Cloud — uses your inputs only.</p>
+              {remainingToday !== null && (
+                <Badge variant="outline" className="border-primary/20 bg-primary/5 text-[0.7rem] text-primary">
+                  {remainingToday} plans left today
+                </Badge>
+              )}
+              <p className="w-full mt-1.5 text-[0.65rem] text-muted-foreground">Powered by AI — uses your inputs only. Limited to 5 plans/day per student.</p>
             </div>
           </CardContent>
         </Card>

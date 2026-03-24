@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_response_cache: {
+        Row: {
+          cache_key: string
+          created_at: string
+          function_name: string
+          hit_count: number
+          id: string
+          response_text: string
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string
+          function_name: string
+          hit_count?: number
+          id?: string
+          response_text: string
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string
+          function_name?: string
+          hit_count?: number
+          id?: string
+          response_text?: string
+        }
+        Relationships: []
+      }
+      ai_usage_log: {
+        Row: {
+          created_at: string
+          function_name: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          function_name: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          function_name?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_attendees: {
         Row: {
           created_at: string | null
@@ -478,7 +526,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_old_ai_usage: { Args: never; Returns: undefined }
+      get_user_ai_usage_today: {
+        Args: { _function_name: string; _user_id: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
