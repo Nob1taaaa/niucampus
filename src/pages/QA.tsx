@@ -14,6 +14,9 @@ const QAPage = () => {
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [remainingToday, setRemainingToday] = useState<number | null>(null);
+  const lastSentRef = useRef(0);
+  const COOLDOWN_MS = 3000; // 3 second cooldown between messages
 
   const sendMessage = async () => {
     const trimmed = input.trim();
