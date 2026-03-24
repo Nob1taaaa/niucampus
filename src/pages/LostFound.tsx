@@ -51,6 +51,7 @@ const LostFoundPage = () => {
   const [activeChatTitle, setActiveChatTitle] = useState("");
   const [matchCount, setMatchCount] = useState(0);
   const [matchPostId, setMatchPostId] = useState<string | null>(null);
+  const [userChatPostIds, setUserChatPostIds] = useState<string[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -62,7 +63,7 @@ const LostFoundPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  useEffect(() => { if (user) loadPosts(); }, [user]);
+  useEffect(() => { if (user) { loadPosts(); loadUserChats(); } }, [user]);
 
   const loadPosts = async () => {
     try {
@@ -72,6 +73,15 @@ const LostFoundPage = () => {
     } catch (error: any) {
       toast({ title: "Error loading posts", description: error.message, variant: "destructive" });
     } finally { setLoading(false); }
+  };
+
+  const loadUserChats = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("lost_found_chats")
+      .select("post_id")
+      .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`);
+    if (data) setUserChatPostIds(data.map((c) => c.post_id));
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -136,6 +146,7 @@ const LostFoundPage = () => {
     setActiveChatId(chatId);
     setActiveChatTitle(claimsPost?.title || "Item");
     setChatOpen(true);
+    loadUserChats();
   };
 
   const handleOpenChat = async (postId: string) => {
@@ -310,6 +321,7 @@ const LostFoundPage = () => {
                 key={post.id}
                 post={post}
                 userId={user?.id}
+                userChatPostIds={userChatPostIds}
                 onClaim={handleClaim}
                 onRemove={handleRemovePost}
                 onViewClaims={handleViewClaims}

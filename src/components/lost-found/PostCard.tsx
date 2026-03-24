@@ -16,15 +16,17 @@ interface PostCardProps {
     created_at: string;
   };
   userId: string | undefined;
+  userChatPostIds?: string[];
   onClaim: (post: any) => void;
   onRemove: (postId: string) => void;
   onViewClaims: (post: any) => void;
   onOpenChat: (postId: string) => void;
 }
 
-const PostCard = ({ post, userId, onClaim, onRemove, onViewClaims, onOpenChat }: PostCardProps) => {
+const PostCard = ({ post, userId, userChatPostIds = [], onClaim, onRemove, onViewClaims, onOpenChat }: PostCardProps) => {
   const isOwner = post.user_id === userId;
   const isLost = post.type === "lost";
+  const hasChat = userChatPostIds.includes(post.id);
 
   return (
     <Card className="group relative border-0 bg-card/80 backdrop-blur-xl shadow-sm rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -94,7 +96,7 @@ const PostCard = ({ post, userId, onClaim, onRemove, onViewClaims, onOpenChat }:
 
         {!post.is_resolved && (
           <div className="flex flex-wrap gap-2 pt-1">
-            {!isOwner && (
+            {!isOwner && !hasChat && (
               <Button
                 type="button"
                 size="sm"
@@ -108,6 +110,11 @@ const PostCard = ({ post, userId, onClaim, onRemove, onViewClaims, onOpenChat }:
                 {isLost ? "🔔 Notify me if found" : "🙋 I think this is mine"}
               </Button>
             )}
+            {!isOwner && hasChat && (
+              <Button type="button" size="sm" className="h-8 rounded-xl text-[0.7rem] px-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground" onClick={() => onOpenChat(post.id)}>
+                <MessageCircle className="h-3 w-3 mr-1" /> Open Chat
+              </Button>
+            )}
             {isOwner && (
               <>
                 <Button type="button" size="sm" variant="outline" className="h-8 rounded-xl text-[0.7rem] px-3 border-primary/20" onClick={() => onViewClaims(post)}>
@@ -118,6 +125,13 @@ const PostCard = ({ post, userId, onClaim, onRemove, onViewClaims, onOpenChat }:
                 </Button>
               </>
             )}
+          </div>
+        )}
+        {post.is_resolved && hasChat && (
+          <div className="pt-1">
+            <Button type="button" size="sm" variant="outline" className="h-8 rounded-xl text-[0.7rem] px-3 border-primary/20 text-primary" onClick={() => onOpenChat(post.id)}>
+              <MessageCircle className="h-3 w-3 mr-1" /> View Chat
+            </Button>
           </div>
         )}
       </CardContent>
