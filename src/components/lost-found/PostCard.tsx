@@ -96,7 +96,7 @@ const PostCard = ({ post, userId, userChatPostIds = [], onClaim, onRemove, onVie
 
         {!post.is_resolved && (
           <div className="flex flex-wrap gap-2 pt-1">
-            {!isOwner && (
+            {!isOwner && !hasChat && (
               <Button
                 type="button"
                 size="sm"
@@ -110,6 +110,11 @@ const PostCard = ({ post, userId, userChatPostIds = [], onClaim, onRemove, onVie
                 {isLost ? "🔔 Notify me if found" : "🙋 I think this is mine"}
               </Button>
             )}
+            {!isOwner && hasChat && (
+              <Button type="button" size="sm" className="h-8 rounded-xl text-[0.7rem] px-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground" onClick={() => onOpenChat(post.id)}>
+                <MessageCircle className="h-3 w-3 mr-1" /> Open Chat
+              </Button>
+            )}
             {isOwner && (
               <>
                 <Button type="button" size="sm" variant="outline" className="h-8 rounded-xl text-[0.7rem] px-3 border-primary/20" onClick={() => onViewClaims(post)}>
@@ -120,6 +125,13 @@ const PostCard = ({ post, userId, userChatPostIds = [], onClaim, onRemove, onVie
                 </Button>
               </>
             )}
+          </div>
+        )}
+        {post.is_resolved && hasChat && (
+          <div className="pt-1">
+            <Button type="button" size="sm" variant="outline" className="h-8 rounded-xl text-[0.7rem] px-3 border-primary/20 text-primary" onClick={() => onOpenChat(post.id)}>
+              <MessageCircle className="h-3 w-3 mr-1" /> View Chat
+            </Button>
           </div>
         )}
       </CardContent>
