@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Link as LinkIcon, Upload, Plus, Download, ExternalLink, Trash2, Search, GraduationCap } from "lucide-react";
+import { FileText, Link as LinkIcon, Upload, Plus, Download, ExternalLink, Trash2, Search, GraduationCap, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,8 +38,10 @@ const StudyMaterialsPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [materials, setMaterials] = useState<StudyMaterial[]>([]);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [tab, setTab] = useState("all");
   const [search, setSearch] = useState("");
+  const [showSaved, setShowSaved] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [uploadType, setUploadType] = useState<"file" | "link">("file");
   const [uploading, setUploading] = useState(false);
@@ -56,7 +58,7 @@ const StudyMaterialsPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  useEffect(() => { if (user) loadMaterials(); }, [user]);
+  useEffect(() => { if (user) { loadMaterials(); loadBookmarks(); } }, [user]);
 
   const loadMaterials = async () => {
     try {
@@ -69,6 +71,25 @@ const StudyMaterialsPage = () => {
     } catch (error: any) {
       toast({ title: "Error loading materials", description: error.message, variant: "destructive" });
     } finally { setLoading(false); }
+  };
+
+  const loadBookmarks = async () => {
+    if (!user) return;
+    const { data } = await supabase.from("study_material_bookmarks").select("material_id").eq("user_id", user.id);
+    if (data) setBookmarkedIds(new Set(data.map((d) => d.material_id)));
+  };
+
+  const toggleBookmark = async (materialId: string) => {
+    if (!user) return;
+    if (bookmarkedIds.has(materialId)) {
+      await supabase.from("study_material_bookmarks").delete().eq("user_id", user.id).eq("material_id", materialId);
+      setBookmarkedIds((prev) => { const n = new Set(prev); n.delete(materialId); return n; });
+      toast({ title: "Bookmark removed" });
+    } else {
+      await supabase.from("study_material_bookmarks").insert({ user_id: user.id, material_id: materialId });
+      setBookmarkedIds((prev) => new Set(prev).add(materialId));
+      toast({ title: "Bookmarked!" });
+    }
   };
 
   const handleUpload = async () => {
@@ -154,6 +175,7 @@ const StudyMaterialsPage = () => {
   };
 
   const filteredMaterials = materials.filter((m) => {
+    if (showSaved && !bookmarkedIds.has(m.id)) return false;
     const matchesTab = tab === "all" || m.subject.toLowerCase() === tab.toLowerCase();
     const matchesSearch = !search || m.title.toLowerCase().includes(search.toLowerCase()) || m.description?.toLowerCase().includes(search.toLowerCase());
     return matchesTab && matchesSearch;
@@ -206,6 +228,16 @@ const StudyMaterialsPage = () => {
             <Tab id="cn" label="🌐 CN" />
             <Tab id="os" label="💻 OS" />
             <Tab id="ai/ml" label="🤖 AI/ML" />
+            <button
+              onClick={() => setShowSaved(!showSaved)}
+              className={`inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[0.7rem] font-medium transition-all ${
+                showSaved
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-primary/8 text-muted-foreground hover:bg-primary/15 hover:text-foreground border border-primary/15"
+              }`}
+            >
+              <Bookmark className="h-3 w-3" /> Saved
+            </button>
           </div>
           <div className="relative max-w-xs w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -234,6 +266,7 @@ const StudyMaterialsPage = () => {
         ) : (
           filteredMaterials.map((material) => {
             const isOwner = material.user_id === user?.id;
+            const isBookmarked = bookmarkedIds.has(material.id);
 
             return (
               <Card key={material.id} className="hover-scale group border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden transition-all hover:shadow-md hover:border-primary/25">
@@ -250,9 +283,22 @@ const StudyMaterialsPage = () => {
                         {material.title}
                       </CardTitle>
                     </div>
-                    <Badge variant="outline" className="border-primary/20 bg-primary/8 text-[0.6rem] text-foreground font-semibold shrink-0">
-                      {material.type === "file" ? "File" : "Link"}
-                    </Badge>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => toggleBookmark(material.id)}
+                        className={`h-7 w-7 rounded-full flex items-center justify-center transition-all ${
+                          isBookmarked
+                            ? "bg-primary/15 text-primary"
+                            : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                        }`}
+                        title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+                      >
+                        <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-primary" : ""}`} />
+                      </button>
+                      <Badge variant="outline" className="border-primary/20 bg-primary/8 text-[0.6rem] text-foreground font-semibold">
+                        {material.type === "file" ? "File" : "Link"}
+                      </Badge>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs">
