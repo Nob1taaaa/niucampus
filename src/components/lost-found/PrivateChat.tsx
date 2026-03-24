@@ -77,6 +77,16 @@ const PrivateChat = ({ open, onOpenChange, chatId, userId, postTitle, onItemRetu
     if (!content.trim()) return;
     setSending(true);
 
+    // Moderate chat messages (skip system messages like return confirmations)
+    if (type === "text") {
+      const modResult = await moderateContent(content.trim(), "chat");
+      if (!modResult.safe) {
+        toast({ title: "⚠️ Message not allowed", description: modResult.reason || "Please keep messages respectful.", variant: "destructive" });
+        setSending(false);
+        return;
+      }
+    }
+
     // Optimistic: add message immediately so user sees it
     const tempId = `pending-${Date.now()}`;
     const optimisticMsg: Message = {
