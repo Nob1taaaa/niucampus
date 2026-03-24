@@ -23,9 +23,10 @@ interface PostCardProps {
   onOpenChat: (postId: string) => void;
 }
 
-const PostCard = ({ post, userId, onClaim, onRemove, onViewClaims, onOpenChat }: PostCardProps) => {
+const PostCard = ({ post, userId, userChatPostIds = [], onClaim, onRemove, onViewClaims, onOpenChat }: PostCardProps) => {
   const isOwner = post.user_id === userId;
   const isLost = post.type === "lost";
+  const hasChat = userChatPostIds.includes(post.id);
 
   return (
     <Card className="group relative border-0 bg-card/80 backdrop-blur-xl shadow-sm rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
