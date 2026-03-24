@@ -38,8 +38,10 @@ const StudyMaterialsPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [materials, setMaterials] = useState<StudyMaterial[]>([]);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [tab, setTab] = useState("all");
   const [search, setSearch] = useState("");
+  const [showSaved, setShowSaved] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [uploadType, setUploadType] = useState<"file" | "link">("file");
   const [uploading, setUploading] = useState(false);
