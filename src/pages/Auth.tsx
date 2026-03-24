@@ -19,7 +19,10 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot" | "phone">("signin");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -109,10 +112,10 @@ const Auth = () => {
         <Card className="border-border bg-card shadow-sm rounded-2xl">
           <CardHeader className="pb-4 pt-6 text-center">
             <CardTitle className="text-lg font-semibold">
-              {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create account" : "Reset password"}
+              {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create account" : mode === "forgot" ? "Reset password" : "Phone sign-in"}
             </CardTitle>
             <CardDescription className="text-sm">
-              {mode === "signin" ? "Sign in to continue" : mode === "signup" ? "Sign up to get started" : "We'll email you a reset link"}
+              {mode === "signin" ? "Sign in to continue" : mode === "signup" ? "Sign up to get started" : mode === "forgot" ? "We'll email you a reset link" : "We'll send you a verification code"}
             </CardDescription>
           </CardHeader>
 
@@ -133,6 +136,63 @@ const Auth = () => {
                   <ArrowLeft className="h-3.5 w-3.5" /> Back to sign in
                 </button>
               </>
+            ) : mode === "phone" ? (
+              <>
+                {!otpSent ? (
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!phone) { toast({ title: "Enter phone number", variant: "destructive" }); return; }
+                    setLoading(true);
+                    try {
+                      const { error } = await supabase.auth.signInWithOtp({ phone });
+                      if (error) throw error;
+                      setOtpSent(true);
+                      toast({ title: "OTP sent! 📱", description: "Check your phone for the verification code." });
+                    } catch (error: any) {
+                      toast({ title: "Error", description: error.message, variant: "destructive" });
+                    } finally {
+                      setLoading(false);
+                    }
+                  }} className="space-y-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="phone" className="text-sm">Phone Number</Label>
+                      <Input id="phone" type="tel" placeholder="+91 98765 43210" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-10 rounded-xl" />
+                      <p className="text-[0.65rem] text-muted-foreground">Include country code (e.g. +91)</p>
+                    </div>
+                    <Button type="submit" className="w-full h-10 rounded-xl" disabled={loading}>
+                      {loading ? "Sending..." : "📱 Send OTP"}
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!otp) { toast({ title: "Enter the OTP", variant: "destructive" }); return; }
+                    setLoading(true);
+                    try {
+                      const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "sms" });
+                      if (error) throw error;
+                    } catch (error: any) {
+                      toast({ title: "Error", description: error.message, variant: "destructive" });
+                    } finally {
+                      setLoading(false);
+                    }
+                  }} className="space-y-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="otp" className="text-sm">Verification Code</Label>
+                      <Input id="otp" type="text" placeholder="123456" value={otp} onChange={(e) => setOtp(e.target.value)} required maxLength={6} className="h-10 rounded-xl text-center text-lg tracking-widest" />
+                    </div>
+                    <Button type="submit" className="w-full h-10 rounded-xl" disabled={loading}>
+                      {loading ? "Verifying..." : "✅ Verify & Sign In"}
+                    </Button>
+                    <button type="button" onClick={() => { setOtpSent(false); setOtp(""); }} className="text-sm text-primary hover:underline mx-auto block">
+                      Resend code
+                    </button>
+                  </form>
+                )}
+                <button type="button" onClick={() => { setMode("signin"); setOtpSent(false); setOtp(""); setPhone(""); }} className="flex items-center gap-1 text-sm text-primary hover:underline mx-auto">
+                  <ArrowLeft className="h-3.5 w-3.5" /> Back to sign in
+                </button>
+              </>
             ) : (
               <>
                 {/* Google button */}
@@ -150,6 +210,16 @@ const Auth = () => {
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                   </svg>
                   {googleLoading ? "Connecting..." : "Continue with Google"}
+                </Button>
+
+                {/* Phone button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-11 rounded-xl border-border text-foreground hover:bg-secondary gap-3"
+                  onClick={() => setMode("phone")}
+                >
+                  📱 Continue with Phone
                 </Button>
 
                 <div className="flex items-center gap-3">
