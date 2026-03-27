@@ -29,17 +29,20 @@ serve(async (req) => {
       return new Response(JSON.stringify({ matches: [] }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Use Lovable AI (FREE) for matching
-    const aiRes = await fetch("https://ai.lovable.dev/v1/chat/completions", {
+    // Use OpenAI (gpt-4o-mini) for matching
+    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not configured");
+
+    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "You are a lost & found matching assistant. Compare the new post against existing posts. Return ONLY a JSON array of matching post IDs with similarity scores (0-1) like [{\"id\":\"uuid\",\"score\":0.8}]. Consider item descriptions, locations, and timing. Return empty array [] if no matches. Return ONLY the JSON array, no other text." },
           { role: "user", content: `New ${type} post:\nTitle: ${title}\nDescription: ${description}\nLocation: ${location}\n\nExisting ${oppositeType} posts:\n${JSON.stringify(existingPosts)}` }
         ],
-        max_tokens: 512,
+        max_tokens: 150,
       }),
     });
 
