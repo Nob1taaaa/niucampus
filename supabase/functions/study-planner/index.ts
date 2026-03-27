@@ -7,8 +7,8 @@ const corsHeaders = {
 };
 
 const FUNCTION_NAME = "study-planner";
-const MAX_REQUESTS_PER_DAY = 5; // study plans are expensive, limit more
-const CACHE_TTL_HOURS = 48; // plans stay relevant longer
+const MAX_REQUESTS_PER_DAY = 5;
+const CACHE_TTL_HOURS = 48;
 
 const systemPrompt = `You are a senior CSE mentor helping a student plan their weekly study and placement prep.
 
@@ -124,20 +124,20 @@ serve(async (req) => {
       }
     }
 
-    // --- CALL AI (OpenAI GPT-4o-mini) ---
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is not configured");
+    // --- CALL LOVABLE AI (FREE - no API key cost) ---
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const prompt = makeUserPrompt(body);
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://ai.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "google/gemini-2.5-flash-lite",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt },
@@ -172,7 +172,7 @@ serve(async (req) => {
       function_name: FUNCTION_NAME,
     });
 
-    // Cache for students with similar profiles
+    // Cache
     await adminClient.from("ai_response_cache").upsert({
       cache_key: cacheKey,
       function_name: FUNCTION_NAME,
