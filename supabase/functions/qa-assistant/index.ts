@@ -100,20 +100,20 @@ serve(async (req) => {
       }
     }
 
-    // --- CALL LOVABLE AI (FREE - no API key needed) ---
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    // --- CALL OPENAI (gpt-4o-mini) ---
+    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is not configured");
 
-    const response = await fetch("https://ai.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: "gpt-4o-mini",
         messages: [{ role: "system", content: systemPrompt }, ...messages],
-        max_tokens: 1024,
+        max_tokens: 150,
       }),
     });
 
