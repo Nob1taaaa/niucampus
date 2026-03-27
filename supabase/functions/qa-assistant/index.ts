@@ -7,16 +7,16 @@ const corsHeaders = {
 };
 
 const FUNCTION_NAME = "qa-assistant";
-const MAX_REQUESTS_PER_DAY = 20; // per student per day
+const MAX_REQUESTS_PER_DAY = 20;
 const CACHE_TTL_HOURS = 24;
 
 const systemPrompt =
   "You are a helpful, concise assistant for CSE students using an anonymous Q&A portal. " +
   "Give clear, practical advice about academics, careers, and campus life. " +
   "Avoid writing very long essays; focus on 3-6 key points and concrete next steps. " +
-  "If the question is unsafe or outside your scope, say that briefly and suggest a safe alternative.";
+  "If the question is unsafe or outside your scope, say that briefly and suggest a safe alternative." +
+  "\n\nFormat your response with clear headings using ## and bullet points for readability.";
 
-// Simple hash for cache keys
 function simpleHash(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -33,7 +33,6 @@ serve(async (req) => {
   }
 
   try {
-    // Auth check
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Authentication required" }), {
@@ -61,13 +60,12 @@ serve(async (req) => {
       });
     }
 
-    // --- SERVICE ROLE client for rate limit & cache tables ---
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    // --- RATE LIMITING: check daily usage ---
+    // --- RATE LIMITING ---
     const { data: usageData } = await adminClient.rpc("get_user_ai_usage_today", {
       _user_id: user.id,
       _function_name: FUNCTION_NAME,
@@ -83,7 +81,7 @@ serve(async (req) => {
       });
     }
 
-    // --- CACHE CHECK: look for cached response ---
+    // --- CACHE CHECK ---
     const lastUserMsg = messages[messages.length - 1]?.content?.toLowerCase().trim() || "";
     const cacheKey = `qa_${simpleHash(lastUserMsg)}`;
 
@@ -96,30 +94,24 @@ serve(async (req) => {
     if (cached) {
       const cacheAge = (Date.now() - new Date(cached.created_at).getTime()) / 3600000;
       if (cacheAge < CACHE_TTL_HOURS) {
-        // Cache hit! Increment counter but don't count against rate limit
-        await adminClient
-          .from("ai_response_cache")
-          .update({ hit_count: 1 }) // just mark as used
-          .eq("cache_key", cacheKey);
-
         return new Response(JSON.stringify({ assistantMessage: cached.response_text, cached: true }), {
           status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
     }
 
-    // --- CALL AI (OpenAI GPT-4o-mini) ---
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is not configured");
+    // --- CALL LOVABLE AI (FREE - no API key needed) ---
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://ai.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "google/gemini-2.5-flash-lite",
         messages: [{ role: "system", content: systemPrompt }, ...messages],
         max_tokens: 1024,
       }),
@@ -145,13 +137,13 @@ serve(async (req) => {
     const assistantMessage = data?.choices?.[0]?.message?.content?.trim();
     if (!assistantMessage) throw new Error("Empty AI response");
 
-    // --- LOG USAGE (rate limit tracking) ---
+    // --- LOG USAGE ---
     await adminClient.from("ai_usage_log").insert({
       user_id: user.id,
       function_name: FUNCTION_NAME,
     });
 
-    // --- CACHE RESPONSE for future students with same question ---
+    // --- CACHE RESPONSE ---
     if (lastUserMsg.length > 10) {
       await adminClient.from("ai_response_cache").upsert({
         cache_key: cacheKey,
@@ -162,7 +154,7 @@ serve(async (req) => {
       }, { onConflict: "cache_key" }).then(() => {});
     }
 
-    // --- PERIODIC CLEANUP (1% chance per request) ---
+    // --- PERIODIC CLEANUP (1% chance) ---
     if (Math.random() < 0.01) {
       adminClient.rpc("cleanup_old_ai_usage").then(() => {});
     }
