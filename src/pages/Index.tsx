@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { ArrowRight, MessageCircle, Users, CalendarDays, HelpCircle, Sparkles, BookOpen, MapPin, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import ReunionFeed from "@/components/lost-found/ReunionFeed";
@@ -23,77 +22,80 @@ const Index = () => {
 
   const features = [
     {
-      icon: CalendarDays, emoji: "📅", title: "Events",
+      emoji: "📅", title: "Events",
       desc: "Browse workshops, hackathons, and campus meetups",
-      path: "/events", color: "text-primary",
+      path: "/events", accent: "from-emerald-500/20 to-teal-500/10",
     },
     {
-      icon: MapPin, emoji: "📍", title: "Lost & Found",
+      emoji: "📍", title: "Lost & Found",
       desc: "Report or find lost items across campus",
-      path: "/lost-found", color: "text-destructive",
+      path: "/lost-found", accent: "from-rose-500/20 to-orange-500/10",
     },
     {
-      icon: Users, emoji: "👥", title: "Study Groups",
-      desc: "Join or create groups for DSA, DBMS, and more",
-      path: "/study-groups", color: "text-accent-foreground",
+      emoji: "👥", title: "Study Groups",
+      desc: "Join or create groups for any subject",
+      path: "/study-groups", accent: "from-violet-500/20 to-indigo-500/10",
     },
     {
-      icon: HelpCircle, emoji: "❓", title: "Q&A",
+      emoji: "❓", title: "Q&A",
       desc: "Ask anything — get AI-powered campus answers",
-      path: "/qa", color: "text-primary",
+      path: "/qa", accent: "from-sky-500/20 to-cyan-500/10",
     },
     {
-      icon: BookOpen, emoji: "🎯", title: "Study Planner",
+      emoji: "🎯", title: "Study Planner",
       desc: "AI creates a personalized weekly study plan",
-      path: "/planner", color: "text-accent-foreground",
+      path: "/planner", accent: "from-amber-500/20 to-yellow-500/10",
     },
     {
-      icon: FileText, emoji: "📚", title: "Study Materials",
+      emoji: "📚", title: "Study Materials",
       desc: "Upload & share notes, PDFs, and useful links",
-      path: "/materials", color: "text-primary",
+      path: "/materials", accent: "from-lime-500/20 to-green-500/10",
     },
   ];
 
   return (
     <div className="text-foreground">
-      <main className="mx-auto max-w-4xl px-4 pb-16 pt-6 md:px-6 md:pt-10">
+      <main className="mx-auto max-w-5xl px-4 pb-20 pt-8 md:px-6 md:pt-14">
         {/* Hero */}
-        <section className="relative overflow-hidden rounded-2xl border border-primary/15 bg-card/60 backdrop-blur-xl p-6 sm:p-8 md:p-10 mb-8">
-          <div className="pointer-events-none absolute -left-20 -top-20 h-60 w-60 rounded-full bg-primary/10 blur-[80px]" />
-          <div className="pointer-events-none absolute -right-20 -bottom-20 h-60 w-60 rounded-full bg-accent/12 blur-[80px]" />
+        <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/80 backdrop-blur-2xl p-8 sm:p-10 md:p-14 mb-10 shadow-lg">
+          {/* Decorative layers */}
+          <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-primary/12 blur-[100px]" />
+          <div className="pointer-events-none absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-accent/15 blur-[90px]" />
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-primary/4 blur-[120px]" />
 
-          <div className="relative space-y-5">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-              <Sparkles className="h-3 w-3" />
-              AI-Powered Campus Platform
+          <div className="relative space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/8 px-4 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
+              <Sparkles className="h-3.5 w-3.5" />
+              AI-Powered Campus
             </div>
 
-            <h1 className="max-w-lg text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+            <h1 className="max-w-2xl text-4xl font-extrabold tracking-tight leading-[1.1] sm:text-5xl md:text-6xl font-serif">
               Your campus,
-              <span className="bg-gradient-to-br from-primary via-accent-foreground to-primary bg-clip-text text-transparent">
-                {" "}brilliantly connected.
+              <br />
+              <span className="bg-gradient-to-r from-primary via-accent-foreground to-primary/70 bg-clip-text text-transparent">
+                brilliantly connected.
               </span>
             </h1>
 
-            <p className="max-w-lg text-base text-muted-foreground leading-relaxed">
+            <p className="max-w-lg text-base sm:text-lg text-muted-foreground leading-relaxed">
               Events, lost & found, study groups, and Q&A — all in one place with an AI assistant that helps you navigate campus life.
             </p>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-3 sm:flex-row pt-2">
               <Button
-                className="hover-scale bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-[var(--shadow-glow)] h-11 rounded-xl px-6 text-sm"
+                className="group h-12 rounded-2xl px-7 text-sm font-semibold bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-[0_8px_30px_hsl(var(--primary)/0.35)] hover:shadow-[0_12px_40px_hsl(var(--primary)/0.45)] transition-all duration-300"
                 onClick={() => navigate("/qa")}
               >
-                <MessageCircle className="mr-1.5 h-4 w-4" />
+                <MessageCircle className="mr-2 h-4 w-4" />
                 Talk to Campus AI
-                <ArrowRight className="ml-1.5 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button
                 variant="outline"
-                className="h-11 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-sm"
+                className="h-12 rounded-2xl border-border/80 bg-card/50 hover:bg-primary/8 hover:border-primary/30 text-sm font-medium transition-all duration-300"
                 onClick={() => navigate("/events")}
               >
-                <CalendarDays className="mr-1.5 h-4 w-4 text-primary" />
+                <CalendarDays className="mr-2 h-4 w-4 text-primary" />
                 Browse Events
               </Button>
             </div>
@@ -101,28 +103,36 @@ const Index = () => {
         </section>
 
         {/* Features grid */}
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <Card
-              key={f.path}
-              className="hover-scale cursor-pointer group border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden transition-all hover:shadow-md hover:border-primary/25"
-              onClick={() => navigate(f.path)}
-            >
-              <div className="h-1 bg-gradient-to-r from-primary/50 to-accent-foreground/30" />
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                  <span className="text-lg">{f.emoji}</span>
-                  {f.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{f.desc}</p>
-                <span className={`mt-3 inline-flex items-center text-xs font-semibold ${f.color} group-hover:gap-2 transition-all`}>
-                  Open <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              </CardContent>
-            </Card>
-          ))}
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Explore</span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((f) => (
+              <button
+                key={f.path}
+                className="group relative text-left overflow-hidden rounded-2xl border border-border/50 bg-card/70 backdrop-blur-sm p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.12)] hover:-translate-y-0.5"
+                onClick={() => navigate(f.path)}
+              >
+                {/* Gradient accent on hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${f.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+
+                <div className="relative">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">{f.emoji}</span>
+                    <h3 className="text-sm font-bold tracking-tight">{f.title}</h3>
+                  </div>
+                  <p className="text-[0.8rem] text-muted-foreground leading-relaxed mb-4">{f.desc}</p>
+                  <span className="inline-flex items-center text-xs font-semibold text-primary group-hover:gap-2 transition-all">
+                    Open <ArrowRight className="ml-1.5 h-3 w-3 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* Reunion Feed */}
@@ -130,24 +140,27 @@ const Index = () => {
 
         {/* Quick info for logged-out users */}
         {!user && (
-          <section className="mt-8 rounded-2xl border border-primary/12 bg-card/60 backdrop-blur-sm p-6 text-center">
-            <p className="text-base font-semibold text-foreground">Ready to get started?</p>
-            <p className="text-sm text-muted-foreground mt-1">Sign in to create events, join study groups, and access all features.</p>
-            <Button className="mt-4 rounded-xl" onClick={() => navigate("/auth")}>
-              Sign In
-            </Button>
+          <section className="mt-10 relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-card/90 to-primary/5 backdrop-blur-xl p-8 text-center">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-[60px]" />
+            <div className="relative">
+              <p className="text-lg font-bold text-foreground">Ready to get started?</p>
+              <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">Sign in to create events, join study groups, and access all features.</p>
+              <Button className="mt-5 rounded-2xl h-11 px-8 font-semibold" onClick={() => navigate("/auth")}>
+                Sign In
+              </Button>
+            </div>
           </section>
         )}
       </main>
 
       {/* Floating AI button */}
-      <div className="fixed bottom-5 right-4 z-40 sm:bottom-6 sm:right-6">
+      <div className="fixed bottom-6 right-5 z-40 sm:bottom-8 sm:right-8">
         <Button
           size="icon"
           onClick={() => navigate("/qa")}
-          className="hover-scale h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-[var(--shadow-glow)] hover:shadow-lg transition-shadow"
+          className="group h-14 w-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-[0_8px_30px_hsl(var(--primary)/0.4)] hover:shadow-[0_12px_40px_hsl(var(--primary)/0.55)] hover:scale-105 transition-all duration-300"
         >
-          <MessageCircle className="h-5 w-5" />
+          <MessageCircle className="h-5 w-5 group-hover:scale-110 transition-transform" />
         </Button>
       </div>
     </div>
