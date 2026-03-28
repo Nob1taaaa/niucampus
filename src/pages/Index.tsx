@@ -55,21 +55,20 @@ const Index = () => {
 
   return (
     <div className="text-foreground">
-      <main className="mx-auto max-w-5xl px-4 pb-20 pt-8 md:px-6 md:pt-14">
-        {/* Hero */}
-        <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/80 backdrop-blur-2xl p-8 sm:p-10 md:p-14 mb-10 shadow-lg">
-          {/* Decorative layers */}
-          <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-primary/12 blur-[100px]" />
-          <div className="pointer-events-none absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-accent/15 blur-[90px]" />
-          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-primary/4 blur-[120px]" />
+      <main className="mx-auto max-w-5xl px-3 pb-20 pt-4 sm:px-4 md:px-6 md:pt-14">
+        {/* Hero — compact on mobile */}
+        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-border/60 bg-card/80 backdrop-blur-2xl p-4 sm:p-8 md:p-14 mb-4 sm:mb-10 shadow-lg">
+          {/* Decorative layers — hidden on mobile */}
+          <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-primary/12 blur-[100px] hidden sm:block" />
+          <div className="pointer-events-none absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-accent/15 blur-[90px] hidden sm:block" />
 
-          <div className="relative space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/8 px-4 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
-              <Sparkles className="h-3.5 w-3.5" />
+          <div className="relative space-y-3 sm:space-y-6">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-primary/25 bg-primary/8 px-3 py-1 sm:px-4 sm:py-1.5 text-[0.65rem] sm:text-xs font-semibold text-primary tracking-wide uppercase">
+              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               AI-Powered Campus
             </div>
 
-            <h1 className="max-w-2xl text-4xl font-extrabold tracking-tight leading-[1.1] sm:text-5xl md:text-6xl font-serif">
+            <h1 className="max-w-2xl text-2xl font-extrabold tracking-tight leading-[1.15] sm:text-4xl md:text-6xl font-serif">
               Your campus,
               <br />
               <span className="bg-gradient-to-r from-primary via-accent-foreground to-primary/70 bg-clip-text text-transparent">
@@ -77,26 +76,26 @@ const Index = () => {
               </span>
             </h1>
 
-            <p className="max-w-lg text-base sm:text-lg text-muted-foreground leading-relaxed">
+            <p className="max-w-lg text-sm sm:text-lg text-muted-foreground leading-relaxed hidden sm:block">
               Events, lost & found, study groups, and Q&A — all in one place with an AI assistant that helps you navigate campus life.
             </p>
 
-            <div className="flex flex-col gap-3 sm:flex-row pt-2">
+            <div className="flex gap-2 sm:gap-3 sm:flex-row pt-1 sm:pt-2">
               <Button
-                className="group h-12 rounded-2xl px-7 text-sm font-semibold bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-[0_8px_30px_hsl(var(--primary)/0.35)] hover:shadow-[0_12px_40px_hsl(var(--primary)/0.45)] transition-all duration-300"
+                className="group h-10 sm:h-12 rounded-xl sm:rounded-2xl px-4 sm:px-7 text-xs sm:text-sm font-semibold bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-[0_8px_30px_hsl(var(--primary)/0.35)] hover:shadow-[0_12px_40px_hsl(var(--primary)/0.45)] transition-all duration-300"
                 onClick={() => navigate("/qa")}
               >
-                <MessageCircle className="mr-2 h-4 w-4" />
-                Talk to Campus AI
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <MessageCircle className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                Campus AI
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform hidden sm:inline" />
               </Button>
               <Button
                 variant="outline"
-                className="h-12 rounded-2xl border-border/80 bg-card/50 hover:bg-primary/8 hover:border-primary/30 text-sm font-medium transition-all duration-300"
+                className="h-10 sm:h-12 rounded-xl sm:rounded-2xl border-border/80 bg-card/50 hover:bg-primary/8 hover:border-primary/30 text-xs sm:text-sm font-medium transition-all duration-300"
                 onClick={() => navigate("/events")}
               >
-                <CalendarDays className="mr-2 h-4 w-4 text-primary" />
-                Browse Events
+                <CalendarDays className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                Events
               </Button>
             </div>
           </div>
