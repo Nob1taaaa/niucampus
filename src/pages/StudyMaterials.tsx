@@ -103,6 +103,7 @@ const StudyMaterialsPage = () => {
   };
 
   const handleUpload = async () => {
+    if (uploading) return;
     if (!user || !form.title.trim() || !form.subject.trim()) {
       toast({ title: "Missing fields", description: "Title and subject are required.", variant: "destructive" });
       return;

@@ -385,8 +385,8 @@ const LostFoundPage = () => {
                 </div>
               )}
 
-              <Button type="submit" className="mt-2 h-9 w-full rounded-xl text-xs bg-gradient-to-r from-primary to-primary/80 shadow-sm">
-                Save to board
+              <Button type="submit" disabled={submitting} className="mt-2 h-9 w-full rounded-xl text-xs bg-gradient-to-r from-primary to-primary/80 shadow-sm">
+                {submitting ? "Saving..." : "Save to board"}
               </Button>
             </form>
           </CardContent>

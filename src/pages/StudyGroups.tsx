@@ -283,7 +283,7 @@ const StudyGroupsPage = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCreateOpen(false)} className="rounded-xl">Cancel</Button>
-            <Button onClick={handleCreateGroup} className="rounded-xl">Create Group</Button>
+            <Button onClick={handleCreateGroup} className="rounded-xl" disabled={submitting}>{submitting ? "Creating..." : "Create Group"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

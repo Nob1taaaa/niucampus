@@ -255,7 +255,7 @@ const EventsPage = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddEventDialogOpen(false)} className="rounded-xl">Cancel</Button>
-            <Button onClick={handleAddEvent} className="rounded-xl">Add Event</Button>
+            <Button onClick={handleAddEvent} className="rounded-xl" disabled={submitting}>{submitting ? "Adding..." : "Add Event"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
