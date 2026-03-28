@@ -151,14 +151,14 @@ const Index = () => {
         )}
       </main>
 
-      {/* Floating AI button */}
-      <div className="fixed bottom-6 right-5 z-40 sm:bottom-8 sm:right-8">
+      {/* Floating AI button — pushed up on mobile to clear bottom nav */}
+      <div className="fixed bottom-20 right-4 z-40 md:bottom-8 md:right-8">
         <Button
           size="icon"
           onClick={() => navigate("/qa")}
-          className="group h-14 w-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-[0_8px_30px_hsl(var(--primary)/0.4)] hover:shadow-[0_12px_40px_hsl(var(--primary)/0.55)] hover:scale-105 transition-all duration-300"
+          className="group h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-[0_8px_30px_hsl(var(--primary)/0.4)] hover:shadow-[0_12px_40px_hsl(var(--primary)/0.55)] hover:scale-105 transition-all duration-300"
         >
-          <MessageCircle className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform" />
         </Button>
       </div>
     </div>
