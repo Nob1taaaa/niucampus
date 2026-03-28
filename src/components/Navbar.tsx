@@ -116,11 +116,46 @@ const Navbar = () => {
             </Button>
           )}
 
-          {/* Mobile menu toggle removed — using bottom nav instead */}
+          {/* Mobile menu toggle */}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 rounded-full md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
 
-      {/* Mobile menu - hidden since we have bottom nav */}
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <nav className="border-t border-border/30 bg-card/95 backdrop-blur-2xl px-4 py-3 md:hidden animate-fade-in">
+          <div className="flex flex-col gap-0.5">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const active = isActive(link.path);
+              return (
+                <button
+                  key={link.path}
+                  onClick={() => {
+                    navigate(link.path);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                    active
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted/20 hover:text-foreground"
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+                  {link.label}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
     </header>
   );
 };
