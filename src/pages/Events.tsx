@@ -104,10 +104,11 @@ const EventsPage = () => {
   };
 
   const handleAddEvent = async () => {
-    if (!user) return;
+    if (!user || submitting) return;
     if (!newEventForm.title.trim() || !newEventForm.description.trim() || !newEventForm.event_date.trim() || !newEventForm.location.trim()) {
       toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" }); return;
     }
+    setSubmitting(true);
     try {
       const contentToCheck = `${newEventForm.title} ${newEventForm.description} ${newEventForm.location} ${newEventForm.category}`;
       const modResult = await moderateContent(contentToCheck, "event");
@@ -126,6 +127,7 @@ const EventsPage = () => {
       setIsAddEventDialogOpen(false);
       setNewEventForm({ title: "", description: "", event_date: "", location: "", category: "" });
     } catch (error: any) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    finally { setSubmitting(false); }
   };
 
   if (loading) {

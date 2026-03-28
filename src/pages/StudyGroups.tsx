@@ -86,9 +86,11 @@ const StudyGroupsPage = () => {
   };
 
   const handleCreateGroup = async () => {
-    if (!user || !form.title.trim() || !form.subject.trim()) {
-      toast({ title: "Missing fields", description: "Title and subject are required.", variant: "destructive" }); return;
+    if (!user || submitting || !form.title.trim() || !form.subject.trim()) {
+      if (!form.title.trim() || !form.subject.trim()) toast({ title: "Missing fields", description: "Title and subject are required.", variant: "destructive" });
+      return;
     }
+    setSubmitting(true);
     try {
       const contentToCheck = `${form.title} ${form.description} ${form.subject} ${form.schedule}`;
       const modResult = await moderateContent(contentToCheck, "study_group");
@@ -106,6 +108,7 @@ const StudyGroupsPage = () => {
       setForm({ title: "", description: "", subject: "", schedule: "", max_members: "10" });
       toast({ title: "Group created!" });
     } catch (error: any) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    finally { setSubmitting(false); }
   };
 
   const handleDeleteGroup = async (groupId: string) => {

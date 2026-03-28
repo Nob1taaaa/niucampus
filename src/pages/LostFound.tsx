@@ -88,9 +88,11 @@ const LostFoundPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!user || !type || !title.trim() || !location.trim() || !description.trim()) {
       toast({ variant: "destructive", title: "Missing information", description: "Please fill in all required fields." }); return;
     }
+    setSubmitting(true);
     try {
       const contentToCheck = `${title} ${description} ${location} ${when}`;
       const modResult = await moderateContent(contentToCheck, "lost_found");
@@ -111,10 +113,9 @@ const LostFoundPage = () => {
       setPosts((prev) => [data, ...prev]);
       toast({ title: "✅ Post added!", description: "Your post is now visible on the board." });
       setTitle(""); setLocation(""); setWhen(""); setDescription(""); setType(""); setSecretQuestion(""); setSecretAnswer("");
-
-      // Trigger AI matching silently
       triggerAIMatching(data);
     } catch (error: any) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    finally { setSubmitting(false); }
   };
 
   const triggerAIMatching = async (post: LostFoundPost) => {
