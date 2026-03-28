@@ -60,7 +60,7 @@ const Navbar = () => {
               <span className="text-xs font-semibold tracking-tight sm:text-sm">NIU Connect</span>
             </div>
             <p className="hidden text-xs text-muted-foreground md:block">
-              Innovate. Create. Code.
+              Your Smart Campus
             </p>
           </div>
         </div>
