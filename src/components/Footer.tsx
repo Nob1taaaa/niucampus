@@ -23,8 +23,8 @@ const Footer = () => {
             <div className="flex items-center gap-2.5">
               <img src={logoImage} alt="Logo" className="h-8 w-8 rounded-xl bg-card p-0.5 shadow-sm object-contain" />
               <div>
-                <p className="text-sm font-semibold tracking-tight">Campus Innovation</p>
-                <p className="text-[0.65rem] text-muted-foreground">Smart Campus Companion</p>
+                <p className="text-sm font-semibold tracking-tight">NIU Connect</p>
+                <p className="text-[0.65rem] text-muted-foreground">Your Smart Campus</p>
               </div>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
