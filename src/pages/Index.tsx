@@ -102,31 +102,30 @@ const Index = () => {
         </section>
 
         {/* Features grid */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6">
+        <section className="mb-4 sm:mb-10">
+          <div className="flex items-center gap-3 mb-3 sm:mb-6">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Explore</span>
+            <span className="text-[0.65rem] sm:text-xs font-semibold uppercase tracking-widest text-muted-foreground">Explore</span>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f) => (
               <button
                 key={f.path}
-                className="group relative text-left overflow-hidden rounded-2xl border border-border/50 bg-card/70 backdrop-blur-sm p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.12)] hover:-translate-y-0.5"
+                className="group relative text-left overflow-hidden rounded-xl sm:rounded-2xl border border-border/50 bg-card/70 backdrop-blur-sm p-3 sm:p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.12)] hover:-translate-y-0.5 active:scale-[0.98]"
                 onClick={() => navigate(f.path)}
               >
-                {/* Gradient accent on hover */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${f.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
                 <div className="relative">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl">{f.emoji}</span>
-                    <h3 className="text-sm font-bold tracking-tight">{f.title}</h3>
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-3">
+                    <span className="text-lg sm:text-2xl">{f.emoji}</span>
+                    <h3 className="text-xs sm:text-sm font-bold tracking-tight">{f.title}</h3>
                   </div>
-                  <p className="text-[0.8rem] text-muted-foreground leading-relaxed mb-4">{f.desc}</p>
-                  <span className="inline-flex items-center text-xs font-semibold text-primary group-hover:gap-2 transition-all">
-                    Open <ArrowRight className="ml-1.5 h-3 w-3 group-hover:translate-x-1 transition-transform duration-300" />
+                  <p className="text-[0.65rem] sm:text-[0.8rem] text-muted-foreground leading-relaxed mb-1 sm:mb-4 line-clamp-2">{f.desc}</p>
+                  <span className="inline-flex items-center text-[0.6rem] sm:text-xs font-semibold text-primary">
+                    Open <ArrowRight className="ml-1 h-2.5 w-2.5 sm:h-3 sm:w-3" />
                   </span>
                 </div>
               </button>
