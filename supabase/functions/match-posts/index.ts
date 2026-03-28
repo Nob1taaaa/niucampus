@@ -41,7 +41,7 @@ serve(async (req) => {
           { role: "system", content: "You are a lost & found matching assistant. Compare the new post against existing posts. Return ONLY a JSON array of matching post IDs with similarity scores (0-1) like [{\"id\":\"uuid\",\"score\":0.8}]. Consider item descriptions, locations, and timing. Return empty array [] if no matches. Return ONLY the JSON array, no other text." },
           { role: "user", content: `New ${type} post:\nTitle: ${title}\nDescription: ${description}\nLocation: ${location}\n\nExisting ${oppositeType} posts:\n${JSON.stringify(existingPosts)}` }
         ],
-        max_tokens: 150,
+        max_tokens: 300,
       }),
     });
 

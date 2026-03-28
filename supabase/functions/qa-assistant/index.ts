@@ -113,7 +113,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [{ role: "system", content: systemPrompt }, ...messages],
-        max_tokens: 150,
+        max_tokens: 700,
       }),
     });
 
