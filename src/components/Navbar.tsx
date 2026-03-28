@@ -52,7 +52,7 @@ const Navbar = () => {
         >
           <img
             src={logoImage}
-            alt="Campus Innovation Logo"
+            alt="NIU Connect Logo"
             className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl object-contain bg-white/90 p-0.5 shadow-sm"
           />
           <div className="hidden sm:block">
