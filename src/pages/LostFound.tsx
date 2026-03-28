@@ -41,6 +41,7 @@ const LostFoundPage = () => {
   const [activeTab, setActiveTab] = useState<"all" | "lost" | "found" | "mine">("all");
   const [posts, setPosts] = useState<LostFoundPost[]>([]);
   const [search, setSearch] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // Modal states
   const [claimModalOpen, setClaimModalOpen] = useState(false);
@@ -87,9 +88,11 @@ const LostFoundPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!user || !type || !title.trim() || !location.trim() || !description.trim()) {
       toast({ variant: "destructive", title: "Missing information", description: "Please fill in all required fields." }); return;
     }
+    setSubmitting(true);
     try {
       const contentToCheck = `${title} ${description} ${location} ${when}`;
       const modResult = await moderateContent(contentToCheck, "lost_found");
@@ -110,10 +113,9 @@ const LostFoundPage = () => {
       setPosts((prev) => [data, ...prev]);
       toast({ title: "✅ Post added!", description: "Your post is now visible on the board." });
       setTitle(""); setLocation(""); setWhen(""); setDescription(""); setType(""); setSecretQuestion(""); setSecretAnswer("");
-
-      // Trigger AI matching silently
       triggerAIMatching(data);
     } catch (error: any) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    finally { setSubmitting(false); }
   };
 
   const triggerAIMatching = async (post: LostFoundPost) => {
@@ -383,8 +385,8 @@ const LostFoundPage = () => {
                 </div>
               )}
 
-              <Button type="submit" className="mt-2 h-9 w-full rounded-xl text-xs bg-gradient-to-r from-primary to-primary/80 shadow-sm">
-                Save to board
+              <Button type="submit" disabled={submitting} className="mt-2 h-9 w-full rounded-xl text-xs bg-gradient-to-r from-primary to-primary/80 shadow-sm">
+                {submitting ? "Saving..." : "Save to board"}
               </Button>
             </form>
           </CardContent>
