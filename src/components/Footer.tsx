@@ -67,7 +67,7 @@ const Footer = () => {
               ))}
             </div>
             <p className="text-[0.65rem] text-muted-foreground/70 leading-relaxed">
-              Designed & developed as a campus innovation project showcasing full-stack capabilities.
+              Designed & developed for Noida International University students.
             </p>
           </div>
         </div>
