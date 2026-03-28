@@ -30,6 +30,7 @@ const StudyGroupsPage = () => {
   const [tab, setTab] = useState<"all" | "dsa" | "dbms" | "others">("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", subject: "", schedule: "", max_members: "10" });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

@@ -41,6 +41,7 @@ const LostFoundPage = () => {
   const [activeTab, setActiveTab] = useState<"all" | "lost" | "found" | "mine">("all");
   const [posts, setPosts] = useState<LostFoundPost[]>([]);
   const [search, setSearch] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // Modal states
   const [claimModalOpen, setClaimModalOpen] = useState(false);

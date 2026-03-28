@@ -31,6 +31,7 @@ const EventsPage = () => {
   const [newEventForm, setNewEventForm] = useState({
     title: "", description: "", event_date: "", location: "", category: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
