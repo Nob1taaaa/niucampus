@@ -204,7 +204,8 @@ const StudyMaterialsPage = () => {
 
   const filteredMaterials = materials.filter((m) => {
     if (showSaved && !bookmarkedIds.has(m.id)) return false;
-    const matchesTab = tab === "all" || (subjectTabMap[tab]?.some((s) => m.subject.toLowerCase() === s) ?? m.subject.toLowerCase() === tab.toLowerCase());
+    const isGeneral = m.subject.toLowerCase() === "general";
+    const matchesTab = tab === "all" || isGeneral || tab === "general" || (subjectTabMap[tab]?.some((s) => m.subject.toLowerCase() === s) ?? m.subject.toLowerCase() === tab.toLowerCase());
     const matchesSearch = !search || m.title.toLowerCase().includes(search.toLowerCase()) || m.description?.toLowerCase().includes(search.toLowerCase());
     return matchesTab && matchesSearch;
   });
