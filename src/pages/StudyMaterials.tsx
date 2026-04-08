@@ -185,9 +185,26 @@ const StudyMaterialsPage = () => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const subjectTabMap: Record<string, string[]> = {
+    general: ["general"],
+    dsa: ["dsa"],
+    dbms: ["dbms"],
+    cn: ["cn"],
+    os: ["os"],
+    "ai/ml": ["ai/ml"],
+    commerce: ["commerce", "accounting", "business studies"],
+    law: ["law"],
+    medical: ["medical"],
+    design: ["design", "architecture", "fine arts"],
+    math: ["math"],
+    economics: ["economics"],
+    psychology: ["psychology"],
+    biology: ["biology", "biotechnology"],
+  };
+
   const filteredMaterials = materials.filter((m) => {
     if (showSaved && !bookmarkedIds.has(m.id)) return false;
-    const matchesTab = tab === "all" || m.subject.toLowerCase() === tab.toLowerCase();
+    const matchesTab = tab === "all" || (subjectTabMap[tab]?.some((s) => m.subject.toLowerCase() === s) ?? m.subject.toLowerCase() === tab.toLowerCase());
     const matchesSearch = !search || m.title.toLowerCase().includes(search.toLowerCase()) || m.description?.toLowerCase().includes(search.toLowerCase());
     return matchesTab && matchesSearch;
   });
@@ -242,6 +259,7 @@ const StudyMaterialsPage = () => {
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             <Tab id="all" label="All" />
+            <Tab id="general" label="📖 General" />
             <Tab id="dsa" label="🧮 DSA" />
             <Tab id="dbms" label="🗄️ DBMS" />
             <Tab id="cn" label="🌐 CN" />
