@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PageHeader from "@/components/PageHeader";
+import StudyMaterialsSkeleton from "@/components/skeletons/StudyMaterialsSkeleton";
 import { moderateContent } from "@/lib/moderation";
 
 interface StudyMaterial {
@@ -221,7 +222,7 @@ const StudyMaterialsPage = () => {
     >{label}</button>
   );
 
-  if (loading) return <div className="min-h-[50vh] flex items-center justify-center"><p className="text-muted-foreground animate-pulse">Loading...</p></div>;
+  if (loading) return <StudyMaterialsSkeleton />;
 
   const subjectColors: Record<string, string> = {
     dsa: "from-primary to-primary/50",
