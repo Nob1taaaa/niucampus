@@ -18,7 +18,16 @@ const QAPage = lazy(() => import("./pages/QA"));
 const StudyPlannerPage = lazy(() => import("./pages/StudyPlanner"));
 const StudyMaterialsPage = lazy(() => import("./pages/StudyMaterials"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2,      // 2 min — revisited pages use cache
+      gcTime: 1000 * 60 * 10,         // 10 min — keep unused data in memory
+      refetchOnWindowFocus: false,     // don't refetch when tab regains focus
+      retry: 1,                        // single retry on failure
+    },
+  },
+});
 
 const PageLoader = () => (
   <div className="flex min-h-[50vh] items-center justify-center">
