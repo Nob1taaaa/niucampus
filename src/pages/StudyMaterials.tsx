@@ -60,16 +60,21 @@ const StudyMaterialsPage = () => {
   const [form, setForm] = useState({ title: "", description: "", subject: "General", external_url: "" });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/auth"); else setUser(session.user);
-    });
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { navigate("/auth"); return; }
+      setUser(session.user);
+    };
+    init();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) navigate("/auth"); else setUser(session.user);
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  useEffect(() => { if (user) { loadMaterials(); loadBookmarks(); } }, [user]);
+  useEffect(() => {
+    if (user) { Promise.all([loadMaterials(), loadBookmarks()]); }
+  }, [user]);
 
   const loadMaterials = async () => {
     try {
