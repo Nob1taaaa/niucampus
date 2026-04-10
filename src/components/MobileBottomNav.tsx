@@ -1,6 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, CalendarDays, MapPin, Users, HelpCircle, BookOpen, FileText } from "lucide-react";
 
+const prefetchMap: Record<string, () => void> = {
+  "/": () => import("@/pages/Index"),
+  "/events": () => import("@/pages/Events"),
+  "/lost-found": () => import("@/pages/LostFound"),
+  "/study-groups": () => import("@/pages/StudyGroups"),
+  "/qa": () => import("@/pages/QA"),
+  "/materials": () => import("@/pages/StudyMaterials"),
+};
+
 const tabs = [
   { path: "/", label: "Home", icon: Home },
   { path: "/events", label: "Events", icon: CalendarDays },
@@ -24,6 +33,7 @@ const MobileBottomNav = () => {
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
+              onTouchStart={() => prefetchMap[tab.path]?.()}
               className={`flex flex-col items-center gap-0.5 py-2 text-[0.6rem] font-medium transition-colors ${
                 active
                   ? "text-primary"

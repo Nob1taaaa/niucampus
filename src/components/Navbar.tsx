@@ -6,6 +6,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import logoImage from "@/assets/logo.png";
 
+// Prefetch page chunks on hover for instant navigation
+const prefetchMap: Record<string, () => void> = {
+  "/": () => import("@/pages/Index"),
+  "/events": () => import("@/pages/Events"),
+  "/lost-found": () => import("@/pages/LostFound"),
+  "/study-groups": () => import("@/pages/StudyGroups"),
+  "/qa": () => import("@/pages/QA"),
+  "/planner": () => import("@/pages/StudyPlanner"),
+  "/materials": () => import("@/pages/StudyMaterials"),
+};
+
 const navLinks = [
   { path: "/", label: "Home", icon: Home },
   { path: "/events", label: "Events", icon: CalendarDays },
@@ -73,6 +84,7 @@ const Navbar = () => {
               <button
                 key={link.path}
                 onClick={() => navigate(link.path)}
+                onMouseEnter={() => prefetchMap[link.path]?.()}
                 className={`relative inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-200 ${
                   active
                     ? "text-primary bg-primary/10"
