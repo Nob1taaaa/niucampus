@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import type { Tables } from "@/integrations/supabase/types";
 import PageHeader from "@/components/PageHeader";
+import EventsSkeleton from "@/components/skeletons/EventsSkeleton";
 import { moderateContent } from "@/lib/moderation";
 
 type Event = Tables<"events">;
@@ -130,9 +131,7 @@ const EventsPage = () => {
     finally { setSubmitting(false); }
   };
 
-  if (loading) {
-    return <div className="min-h-[50vh] flex items-center justify-center"><p className="text-muted-foreground animate-pulse text-sm">Loading events...</p></div>;
-  }
+  if (loading) return <EventsSkeleton />;
 
   return (
     <main className="mx-auto max-w-5xl px-4 pb-16 pt-6 md:px-6 md:pt-8">

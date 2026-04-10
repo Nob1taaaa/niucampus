@@ -19,6 +19,7 @@ import MatchNotification from "@/components/lost-found/MatchNotification";
 import ReunionFeed from "@/components/lost-found/ReunionFeed";
 import confetti from "canvas-confetti";
 import { moderateContent } from "@/lib/moderation";
+import LostFoundSkeleton from "@/components/skeletons/LostFoundSkeleton";
 
 interface LostFoundPost {
   id: string; user_id: string; type: string; title: string; location: string;
@@ -254,7 +255,7 @@ const LostFoundPage = () => {
     </button>
   );
 
-  if (loading) return <div className="min-h-[50vh] flex items-center justify-center"><p className="text-muted-foreground animate-pulse">Loading...</p></div>;
+  if (loading) return <LostFoundSkeleton />;
 
   return (
     <main className="mx-auto max-w-6xl px-3 pb-16 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
