@@ -22,7 +22,7 @@ const Index = () => {
 
   const features = [
     {
-      emoji: "📅", title: "Events",
+      emoji: "🎉", title: "Events",
       desc: "Browse workshops, hackathons, and campus meetups",
       path: "/events", accent: "from-emerald-500/20 to-teal-500/10",
     },
