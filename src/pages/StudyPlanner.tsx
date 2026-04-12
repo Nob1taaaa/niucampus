@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Target, Clock, BookOpen } from "lucide-react";
+import { Sparkles, Target, Clock, BookOpen, Mail, CalendarDays, Send, CheckCircle2 } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
 import PageHeader from "@/components/PageHeader";
@@ -38,6 +38,11 @@ const StudyPlannerPage = () => {
   const [remainingToday, setRemainingToday] = useState<number | null>(null);
   const lastGenRef = useRef(0);
   const COOLDOWN_MS = 5000;
+
+  // Reminder state
+  const [reminderSent, setReminderSent] = useState(false);
+  const [isSendingReminder, setIsSendingReminder] = useState(false);
+  const [examPrepDate, setExamPrepDate] = useState("");
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -68,7 +73,7 @@ const StudyPlannerPage = () => {
     }
     lastGenRef.current = now;
 
-    setIsGenerating(true); setPlan("");
+    setIsGenerating(true); setPlan(""); setReminderSent(false);
     const { data, error } = await supabase.functions.invoke<{ plan: string; remainingToday?: number; dailyLimit?: boolean }>("study-planner", {
       body: { semester, targetRole, hoursPerWeek, focusAreas: selectedFocus, upcomingExams, extraContext },
     });
@@ -87,6 +92,32 @@ const StudyPlannerPage = () => {
     setIsGenerating(false);
   };
 
+  const sendPlanToEmail = async () => {
+    if (!plan || !session?.user?.email) return;
+    setIsSendingReminder(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "study-plan-reminder",
+          recipientEmail: session.user.email,
+          idempotencyKey: `study-plan-${session.user.id}-${Date.now()}`,
+          templateData: {
+            name: session.user.user_metadata?.full_name || session.user.email.split("@")[0],
+            plan,
+            examDate: examPrepDate || upcomingExams || undefined,
+            focusAreas: selectedFocus.length > 0 ? selectedFocus.join(", ") : undefined,
+          },
+        },
+      });
+      if (error) throw error;
+      setReminderSent(true);
+      toast({ title: "📧 Plan sent to your email!", description: `Check ${session.user.email} for your study roadmap.` });
+    } catch {
+      toast({ title: "Could not send email", description: "Please try again in a moment.", variant: "destructive" });
+    }
+    setIsSendingReminder(false);
+  };
+
   return (
     <main className="mx-auto max-w-5xl px-3 pb-16 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
       <PageHeader icon="🎯" title="Study & Placement Planner" subtitle="Answer a few questions and let the AI mentor design a realistic weekly plan for your semester and placements.">
@@ -96,6 +127,7 @@ const StudyPlannerPage = () => {
       </PageHeader>
 
       <section className="grid gap-5 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.2fr)]">
+        {/* Left: Input Form */}
         <Card className="border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-primary to-accent-foreground/50" />
           <CardHeader className="pb-3">
@@ -162,33 +194,108 @@ const StudyPlannerPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden">
-          <div className="h-1 bg-gradient-to-r from-accent-foreground/40 to-primary/40" />
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm font-bold">
-              <Clock className="h-4 w-4 text-primary" /> Your weekly roadmap
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <ScrollArea className="h-[360px] rounded-xl border border-primary/10 bg-background/40 p-4 text-sm">
-              {plan ? (
-                <article className="prose prose-sm dark:prose-invert max-w-none text-foreground prose-headings:text-primary prose-headings:font-bold prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2 prose-strong:text-foreground prose-li:marker:text-primary/60 prose-ul:space-y-1 prose-p:leading-relaxed">
-                  <ReactMarkdown>{plan}</ReactMarkdown>
-                </article>
-              ) : (
-                <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-muted-foreground">
-                  <div className="h-14 w-14 rounded-2xl bg-primary/8 border border-primary/15 flex items-center justify-center">
-                    <BookOpen className="h-6 w-6 text-primary/50" />
+        {/* Right: Plan Output + Reminder */}
+        <div className="flex flex-col gap-5">
+          <Card className="border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-accent-foreground/40 to-primary/40" />
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                <Clock className="h-4 w-4 text-primary" /> Your weekly roadmap
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <ScrollArea className="h-[300px] rounded-xl border border-primary/10 bg-background/40 p-4 text-sm">
+                {plan ? (
+                  <article className="prose prose-sm dark:prose-invert max-w-none text-foreground prose-headings:text-primary prose-headings:font-bold prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2 prose-strong:text-foreground prose-li:marker:text-primary/60 prose-ul:space-y-1 prose-p:leading-relaxed">
+                    <ReactMarkdown>{plan}</ReactMarkdown>
+                  </article>
+                ) : (
+                  <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-muted-foreground">
+                    <div className="h-14 w-14 rounded-2xl bg-primary/8 border border-primary/15 flex items-center justify-center">
+                      <BookOpen className="h-6 w-6 text-primary/50" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground text-sm">Your plan appears here</p>
+                      <p className="max-w-xs text-xs mt-1">Including daily slots, non-negotiable habits, and 4-week milestones ✨</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-foreground text-sm">Your plan appears here</p>
-                    <p className="max-w-xs text-xs mt-1">Including daily slots, non-negotiable habits, and 4-week milestones ✨</p>
-                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* Email Reminder Card */}
+          <Card className={`rounded-2xl overflow-hidden border transition-all duration-500 ${
+            plan
+              ? "border-primary/20 bg-gradient-to-br from-primary/5 via-card/80 to-accent/10 shadow-md"
+              : "border-primary/8 bg-card/40 opacity-60 pointer-events-none"
+          }`}>
+            <div className="h-1 bg-gradient-to-r from-primary/60 via-accent-foreground/30 to-primary/40" />
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center flex-shrink-0">
+                  <Mail className="h-5 w-5 text-primary" />
                 </div>
-              )}
-            </ScrollArea>
-          </CardContent>
-        </Card>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                    📩 Email this plan to yourself
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Get your study roadmap delivered to your inbox — reference it anytime, even offline!
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4 text-primary/60 flex-shrink-0" />
+                  <Input
+                    value={examPrepDate}
+                    onChange={(e) => setExamPrepDate(e.target.value)}
+                    placeholder="Exam target date (e.g. May 2026)"
+                    className="rounded-xl border-primary/15 h-9 text-xs"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex-1 flex items-center gap-2 min-w-0">
+                    <Mail className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
+                    <span className="text-xs text-muted-foreground truncate">{session?.user?.email}</span>
+                  </div>
+
+                  {reminderSent ? (
+                    <div className="flex items-center gap-1.5 text-primary">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span className="text-xs font-medium">Sent! Check your inbox</span>
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onClick={sendPlanToEmail}
+                      disabled={!plan || isSendingReminder}
+                      className="h-9 rounded-xl px-4 text-xs gap-1.5 bg-gradient-to-r from-primary to-primary/80 shadow-sm hover:shadow-md transition-all"
+                    >
+                      {isSendingReminder ? (
+                        <>
+                          <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                          Sending…
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-3.5 w-3.5" /> Send to my email
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-[0.6rem] text-muted-foreground/70 mt-3 leading-relaxed">
+                ✉️ Your plan with focus areas, tips, and study schedule will be emailed to you. You can unsubscribe anytime.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </section>
     </main>
   );

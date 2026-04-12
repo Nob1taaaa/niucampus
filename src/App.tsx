@@ -17,6 +17,7 @@ const StudyGroupsPage = lazy(() => import("./pages/StudyGroups"));
 const QAPage = lazy(() => import("./pages/QA"));
 const StudyPlannerPage = lazy(() => import("./pages/StudyPlanner"));
 const StudyMaterialsPage = lazy(() => import("./pages/StudyMaterials"));
+const UnsubscribePage = lazy(() => import("./pages/Unsubscribe"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/qa" element={<Layout><QAPage /></Layout>} />
             <Route path="/planner" element={<Layout><StudyPlannerPage /></Layout>} />
             <Route path="/materials" element={<Layout><StudyMaterialsPage /></Layout>} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
