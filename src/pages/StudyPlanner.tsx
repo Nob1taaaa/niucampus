@@ -15,11 +15,43 @@ import ReactMarkdown from "react-markdown";
 import PageHeader from "@/components/PageHeader";
 
 const focusOptions = [
+  // Engineering & Technology
   { label: "DSA & problem solving", emoji: "🧮" },
   { label: "Core CS (OS/DBMS/CN)", emoji: "💻" },
   { label: "Development & projects", emoji: "🛠️" },
   { label: "Interview / placement prep", emoji: "💼" },
   { label: "Gate / higher studies", emoji: "🎓" },
+  { label: "Electronics & circuits", emoji: "🔌" },
+  { label: "Mechanical engineering", emoji: "⚙️" },
+  { label: "Civil engineering", emoji: "🏗️" },
+  // Business Management
+  { label: "Business & management", emoji: "📊" },
+  { label: "Marketing & advertising", emoji: "📣" },
+  { label: "Finance & accounting", emoji: "💰" },
+  { label: "Entrepreneurship", emoji: "🚀" },
+  // Law & Legal Affairs
+  { label: "Law & legal studies", emoji: "⚖️" },
+  // Allied Health Sciences & Nursing
+  { label: "Nursing & healthcare", emoji: "🏥" },
+  { label: "Allied health sciences", emoji: "🩺" },
+  // Pharmacy
+  { label: "Pharmacy & drug sciences", emoji: "💊" },
+  // Sciences
+  { label: "Physics & mathematics", emoji: "🔬" },
+  { label: "Chemistry & biology", emoji: "🧪" },
+  { label: "Environmental science", emoji: "🌿" },
+  // Liberal Arts & Education
+  { label: "Liberal arts & humanities", emoji: "📚" },
+  { label: "Education & pedagogy", emoji: "🎒" },
+  { label: "Psychology & sociology", emoji: "🧠" },
+  // Journalism & Mass Communication
+  { label: "Journalism & media", emoji: "📰" },
+  { label: "Mass communication", emoji: "🎙️" },
+  // Fine Arts & Design
+  { label: "Fine arts & design", emoji: "🎨" },
+  { label: "Architecture & planning", emoji: "📐" },
+  // NIIMS (Medical)
+  { label: "Medical sciences (NIIMS)", emoji: "🏨" },
 ];
 
 const StudyPlannerPage = () => {
