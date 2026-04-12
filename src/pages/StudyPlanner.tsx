@@ -151,14 +151,14 @@ const StudyPlannerPage = () => {
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-3 pb-16 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+    <main className="mx-auto max-w-5xl px-3 pb-20 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
       <PageHeader icon="🎯" title="Study & Placement Planner" subtitle="Answer a few questions and let the AI mentor design a realistic weekly plan for your semester and placements.">
         <Badge variant="outline" className="border-primary/20 bg-primary/5 text-[0.7rem] text-primary">
           <Sparkles className="mr-1 h-3 w-3" /> AI powered
         </Badge>
       </PageHeader>
 
-      <section className="grid gap-5 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.2fr)]">
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         {/* Left: Input Form */}
         <Card className="border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-primary to-accent-foreground/50" />
@@ -168,7 +168,7 @@ const StudyPlannerPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="semester" className="text-xs">Semester / year</Label>
                 <Input id="semester" value={semester} onChange={(e) => setSemester(e.target.value)} placeholder="e.g. 3rd year, 5th sem" className="rounded-xl border-primary/15" />
@@ -185,21 +185,33 @@ const StudyPlannerPage = () => {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs">What do you want to focus on?</Label>
-              <div className="flex flex-wrap gap-2">
-                {focusOptions.map(({ label, emoji }) => (
-                  <button
-                    key={label} type="button" onClick={() => toggleFocus(label)}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[0.72rem] font-medium transition-all ${
-                      selectedFocus.includes(label)
-                        ? "border-primary/40 bg-primary/10 text-primary shadow-sm"
-                        : "border-primary/12 bg-card/50 text-muted-foreground hover:bg-primary/5 hover:text-foreground"
-                    }`}
-                  >
-                    <span>{emoji}</span> {label}
-                  </button>
-                ))}
-              </div>
+              <Label className="text-xs">What do you want to focus on? <span className="text-muted-foreground">(select multiple)</span></Label>
+              <ScrollArea className="h-[180px] rounded-xl border border-primary/10 bg-background/30 p-3">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {focusOptions.map(({ label, emoji }) => (
+                    <button
+                      key={label} type="button" onClick={() => toggleFocus(label)}
+                      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-left text-[0.72rem] font-medium transition-all ${
+                        selectedFocus.includes(label)
+                          ? "border-primary/40 bg-primary/10 text-primary shadow-sm"
+                          : "border-primary/10 bg-card/50 text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                      }`}
+                    >
+                      <span className="flex-shrink-0">{emoji}</span>
+                      <span className="truncate">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+              {selectedFocus.length > 0 && (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {selectedFocus.map((f) => (
+                    <Badge key={f} variant="secondary" className="text-[0.65rem] px-2 py-0.5 cursor-pointer hover:bg-destructive/10 hover:text-destructive transition-colors" onClick={() => toggleFocus(f)}>
+                      {f} ✕
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -209,10 +221,10 @@ const StudyPlannerPage = () => {
 
             <div className="space-y-1.5">
               <Label htmlFor="extra" className="text-xs">Anything else?</Label>
-              <Textarea id="extra" value={extraContext} onChange={(e) => setExtraContext(e.target.value)} placeholder="Mention lab-heavy weeks, backlogs, clubs, constraints..." className="min-h-[80px] resize-none rounded-xl border-primary/15" />
+              <Textarea id="extra" value={extraContext} onChange={(e) => setExtraContext(e.target.value)} placeholder="Mention lab-heavy weeks, backlogs, clubs, constraints..." className="min-h-[70px] resize-none rounded-xl border-primary/15" />
             </div>
 
-            <div className="pt-1 flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap pt-1">
               <Button className="h-10 rounded-xl px-5 text-sm bg-gradient-to-r from-primary to-primary/80 shadow-[var(--shadow-glow)] hover:shadow-lg transition-shadow" onClick={generatePlan} disabled={isGenerating}>
                 {isGenerating ? "✨ Generating your plan…" : "🎯 Generate my weekly plan"}
               </Button>
@@ -221,22 +233,22 @@ const StudyPlannerPage = () => {
                   {remainingToday} plans left today
                 </Badge>
               )}
-              <p className="w-full mt-1.5 text-[0.65rem] text-muted-foreground">Powered by AI — uses your inputs only. Limited to 5 plans/day per student.</p>
+              <p className="w-full mt-1 text-[0.65rem] text-muted-foreground">Powered by AI — uses your inputs only. Limited to 5 plans/day per student.</p>
             </div>
           </CardContent>
         </Card>
 
         {/* Right: Plan Output + Reminder */}
         <div className="flex flex-col gap-5">
-          <Card className="border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden">
+          <Card className="border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden flex-1">
             <div className="h-1 bg-gradient-to-r from-accent-foreground/40 to-primary/40" />
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-bold">
                 <Clock className="h-4 w-4 text-primary" /> Your weekly roadmap
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <ScrollArea className="h-[300px] rounded-xl border border-primary/10 bg-background/40 p-4 text-sm">
+            <CardContent className="text-sm">
+              <ScrollArea className="h-[320px] rounded-xl border border-primary/10 bg-background/40 p-4 text-sm">
                 {plan ? (
                   <article className="prose prose-sm dark:prose-invert max-w-none text-foreground prose-headings:text-primary prose-headings:font-bold prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2 prose-strong:text-foreground prose-li:marker:text-primary/60 prose-ul:space-y-1 prose-p:leading-relaxed">
                     <ReactMarkdown>{plan}</ReactMarkdown>
