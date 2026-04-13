@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { User } from "@supabase/supabase-js";
 import type { Tables } from "@/integrations/supabase/types";
 import PageHeader from "@/components/PageHeader";
@@ -227,36 +228,38 @@ const EventsPage = () => {
 
       {/* Add Event Dialog */}
       <Dialog open={isAddEventDialogOpen} onOpenChange={setIsAddEventDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] rounded-2xl">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[500px] max-h-[85vh] rounded-2xl p-0 flex flex-col">
+          <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle>📅 Add a new event</DialogTitle>
             <DialogDescription>Fill in the details. Visible to all students.</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Event title *</Label>
-              <Input id="title" placeholder="e.g. Club showcase" value={newEventForm.title} onChange={(e) => setNewEventForm((p) => ({ ...p, title: e.target.value }))} className="rounded-xl" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="description">Description *</Label>
-              <Textarea id="description" placeholder="Brief description" value={newEventForm.description} onChange={(e) => setNewEventForm((p) => ({ ...p, description: e.target.value }))} rows={3} className="rounded-xl" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="event_date">Date & Time *</Label>
-              <Input id="event_date" type="datetime-local" value={newEventForm.event_date} onChange={(e) => setNewEventForm((p) => ({ ...p, event_date: e.target.value }))} className="rounded-xl" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          <ScrollArea className="flex-1 px-6 overflow-y-auto">
+            <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="location">Location *</Label>
-                <Input id="location" placeholder="e.g. Room 301" value={newEventForm.location} onChange={(e) => setNewEventForm((p) => ({ ...p, location: e.target.value }))} className="rounded-xl" />
+                <Label htmlFor="title">Event title *</Label>
+                <Input id="title" placeholder="e.g. Club showcase" value={newEventForm.title} onChange={(e) => setNewEventForm((p) => ({ ...p, title: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Input id="category" placeholder="e.g. Technical" value={newEventForm.category} onChange={(e) => setNewEventForm((p) => ({ ...p, category: e.target.value }))} className="rounded-xl" />
+                <Label htmlFor="description">Description *</Label>
+                <Textarea id="description" placeholder="Brief description" value={newEventForm.description} onChange={(e) => setNewEventForm((p) => ({ ...p, description: e.target.value }))} rows={3} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="event_date">Date & Time *</Label>
+                <Input id="event_date" type="datetime-local" value={newEventForm.event_date} onChange={(e) => setNewEventForm((p) => ({ ...p, event_date: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="location">Location *</Label>
+                  <Input id="location" placeholder="e.g. Room 301" value={newEventForm.location} onChange={(e) => setNewEventForm((p) => ({ ...p, location: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Input id="category" placeholder="e.g. Technical" value={newEventForm.category} onChange={(e) => setNewEventForm((p) => ({ ...p, category: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
+                </div>
               </div>
             </div>
-          </div>
-          <DialogFooter>
+          </ScrollArea>
+          <DialogFooter className="px-6 pb-6 pt-2">
             <Button variant="outline" onClick={() => setIsAddEventDialogOpen(false)} className="rounded-xl">Cancel</Button>
             <Button onClick={handleAddEvent} className="rounded-xl" disabled={submitting}>{submitting ? "Adding..." : "Add Event"}</Button>
           </DialogFooter>
