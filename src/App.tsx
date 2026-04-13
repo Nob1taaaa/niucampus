@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import ScrollToTop from "./components/ScrollToTop";
+import BackToHome from "./components/BackToHome";
 
 // Lazy-load pages for faster initial load
 const Index = lazy(() => import("./pages/Index"));
@@ -42,6 +44,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
+        <BackToHome />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/auth" element={<Auth />} />
