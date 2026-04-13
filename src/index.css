@@ -146,6 +146,26 @@
   #root {
     @apply min-h-screen;
   }
+
+  /* Fix mobile keyboard hiding inputs — ensure focused element scrolls into view */
+  @supports (height: 100dvh) {
+    html {
+      height: 100dvh;
+    }
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    scroll-margin-bottom: 120px;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  @media screen and (max-width: 768px) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+  }
 }
 
 @layer utilities {
