@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { MessageCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -154,6 +154,11 @@ const QAPage = () => {
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onFocus={(e) => {
+                setTimeout(() => {
+                  e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 300);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -161,7 +166,7 @@ const QAPage = () => {
                 }
               }}
               placeholder="Type your question here..."
-              className="min-h-[60px] sm:min-h-[80px] resize-none text-[0.8rem] sm:text-sm rounded-xl border-primary/15"
+              className="min-h-[60px] sm:min-h-[80px] resize-none rounded-xl"
             />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
