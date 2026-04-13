@@ -258,7 +258,7 @@ const StudyGroupsPage = () => {
 
       {/* Create Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="sm:max-w-[500px] rounded-2xl">
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">👥 Create a study group</DialogTitle>
             <DialogDescription>Set up a new study group for your campus mates.</DialogDescription>
@@ -266,24 +266,24 @@ const StudyGroupsPage = () => {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Group title *</Label>
-              <Input placeholder="e.g. DSA Prep – Evening batch" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="rounded-xl" />
+              <Input placeholder="e.g. DSA Prep – Evening batch" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
             </div>
             <div className="grid gap-2">
               <Label>Subject *</Label>
-              <Input placeholder="e.g. DSA, DBMS, CN" value={form.subject} onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))} className="rounded-xl" />
+              <Input placeholder="e.g. DSA, DBMS, CN" value={form.subject} onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
             </div>
             <div className="grid gap-2">
               <Label>Description</Label>
-              <Textarea placeholder="What will you study? Any prerequisites?" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} rows={3} className="rounded-xl" />
+              <Textarea placeholder="What will you study? Any prerequisites?" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} rows={3} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>Schedule</Label>
-                <Input placeholder="e.g. Mon, Wed 7 PM" value={form.schedule} onChange={(e) => setForm((p) => ({ ...p, schedule: e.target.value }))} className="rounded-xl" />
+                <Input placeholder="e.g. Mon, Wed 7 PM" value={form.schedule} onChange={(e) => setForm((p) => ({ ...p, schedule: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
               </div>
               <div className="grid gap-2">
                 <Label>Max members</Label>
-                <Input type="number" min={2} value={form.max_members} onChange={(e) => setForm((p) => ({ ...p, max_members: e.target.value }))} className="rounded-xl" />
+                <Input type="number" min={2} value={form.max_members} onChange={(e) => setForm((p) => ({ ...p, max_members: e.target.value }))} className="rounded-xl" onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300)} />
               </div>
             </div>
           </div>
