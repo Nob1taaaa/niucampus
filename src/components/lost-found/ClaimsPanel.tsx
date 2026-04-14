@@ -44,11 +44,9 @@ const ClaimsPanel = ({ open, onOpenChange, postId, postTitle, userId, onChatCrea
   const handleAccept = async (claim: Claim) => {
     setProcessing(claim.id);
     try {
-      // Update claim status
       const { error: updateError } = await supabase.from("lost_found_claims").update({ status: "accepted" }).eq("id", claim.id);
       if (updateError) throw updateError;
 
-      // Create chat room
       const { data: chatData, error: chatError } = await supabase.from("lost_found_chats").insert({
         post_id: postId,
         claim_id: claim.id,
@@ -56,6 +54,16 @@ const ClaimsPanel = ({ open, onOpenChange, postId, postTitle, userId, onChatCrea
         user2_id: claim.claimant_id,
       }).select().single();
       if (chatError) throw chatError;
+
+      // Notify claimant that their claim was accepted
+      supabase.functions.invoke("notify-claim", {
+        body: {
+          type: "claim_accepted",
+          post_id: postId,
+          post_title: postTitle,
+          target_user_id: claim.claimant_id,
+        },
+      }).catch(console.error);
 
       toast({ title: "✅ Claim accepted!", description: "A private chat has been opened." });
       onOpenChange(false);
@@ -67,12 +75,23 @@ const ClaimsPanel = ({ open, onOpenChange, postId, postTitle, userId, onChatCrea
     }
   };
 
-  const handleReject = async (claimId: string) => {
-    setProcessing(claimId);
+  const handleReject = async (claim: Claim) => {
+    setProcessing(claim.id);
     try {
-      const { error } = await supabase.from("lost_found_claims").update({ status: "rejected" }).eq("id", claimId);
+      const { error } = await supabase.from("lost_found_claims").update({ status: "rejected" }).eq("id", claim.id);
       if (error) throw error;
-      setClaims((prev) => prev.map((c) => (c.id === claimId ? { ...c, status: "rejected" } : c)));
+      setClaims((prev) => prev.map((c) => (c.id === claim.id ? { ...c, status: "rejected" } : c)));
+
+      // Notify claimant
+      supabase.functions.invoke("notify-claim", {
+        body: {
+          type: "claim_rejected",
+          post_id: postId,
+          post_title: postTitle,
+          target_user_id: claim.claimant_id,
+        },
+      }).catch(console.error);
+
       toast({ title: "Claim rejected" });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message });
