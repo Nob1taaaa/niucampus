@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, Home, CalendarDays, Users, HelpCircle, BookOpen, MapPin, FileText } from "lucide-react";
+import { LogOut, Home, CalendarDays, Users, HelpCircle, BookOpen, MapPin, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import logoImage from "@/assets/logo.png";
+import NotificationBell from "./NotificationBell";
 
 // Prefetch page chunks on hover for instant navigation
 const prefetchMap: Record<string, () => void> = {
