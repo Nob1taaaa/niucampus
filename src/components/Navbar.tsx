@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, Home, CalendarDays, Users, HelpCircle, BookOpen, MapPin, FileText } from "lucide-react";
+import { LogOut, Home, CalendarDays, Users, HelpCircle, BookOpen, MapPin, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import logoImage from "@/assets/logo.png";
+import NotificationBell from "./NotificationBell";
 
 // Prefetch page chunks on hover for instant navigation
 const prefetchMap: Record<string, () => void> = {
@@ -102,9 +103,10 @@ const Navbar = () => {
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {user ? (
             <>
+              <NotificationBell userId={user.id} />
               <div className="hidden h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent-foreground text-[0.65rem] font-bold text-primary-foreground md:flex ring-2 ring-primary/20">
                 {user.email?.charAt(0).toUpperCase()}
               </div>

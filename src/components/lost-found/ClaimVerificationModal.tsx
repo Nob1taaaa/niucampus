@@ -33,6 +33,17 @@ const ClaimVerificationModal = ({ open, onOpenChange, post, userId, onClaimSubmi
         answer: answer.trim(),
       }).select().single();
       if (error) throw error;
+
+      // Send notification to post owner
+      supabase.functions.invoke("notify-claim", {
+        body: {
+          type: "claim",
+          post_id: post.id,
+          post_title: post.title,
+          target_user_id: post.user_id,
+        },
+      }).catch(console.error);
+
       toast({ title: "✅ Claim submitted!", description: "The item poster will review your answer." });
       setAnswer("");
       onOpenChange(false);
