@@ -103,9 +103,10 @@ const Navbar = () => {
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {user ? (
             <>
+              <NotificationBell userId={user.id} />
               <div className="hidden h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent-foreground text-[0.65rem] font-bold text-primary-foreground md:flex ring-2 ring-primary/20">
                 {user.email?.charAt(0).toUpperCase()}
               </div>
