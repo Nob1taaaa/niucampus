@@ -38,13 +38,17 @@ const NotificationBell = ({ userId }: { userId: string }) => {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const fetchNotifications = useCallback(async () => {
-    const { data } = await (supabase as any)
-      .from("notifications")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(30);
-    if (data) setNotifications(data as Notification[]);
+    try {
+      const { data, error } = await (supabase as any)
+        .from("notifications")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (data && !error) setNotifications(data as Notification[]);
+    } catch {
+      // Table may not exist yet — silently ignore
+    }
   }, [userId]);
 
   useEffect(() => {
