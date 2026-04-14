@@ -33,8 +33,9 @@ const queryClient = new QueryClient({
 });
 
 const PageLoader = () => (
-  <div className="flex min-h-[50vh] items-center justify-center">
-    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+  <div className="flex min-h-[60vh] items-center justify-center gap-3">
+    <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-primary/20 border-t-primary" />
+    <span className="text-xs text-muted-foreground font-medium animate-pulse">Loading…</span>
   </div>
 );
 
