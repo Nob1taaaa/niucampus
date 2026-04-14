@@ -134,7 +134,7 @@ const ClaimsPanel = ({ open, onOpenChange, postId, postTitle, userId, onChatCrea
                     <Button type="button" size="sm" className="flex-1 h-8 rounded-xl text-[0.7rem] bg-gradient-to-r from-primary to-primary/80" onClick={() => handleAccept(claim)} disabled={processing === claim.id}>
                       {processing === claim.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Check className="h-3 w-3 mr-1" /> Accept</>}
                     </Button>
-                    <Button type="button" size="sm" variant="outline" className="flex-1 h-8 rounded-xl text-[0.7rem] text-destructive border-destructive/20" onClick={() => handleReject(claim.id)} disabled={processing === claim.id}>
+                    <Button type="button" size="sm" variant="outline" className="flex-1 h-8 rounded-xl text-[0.7rem] text-destructive border-destructive/20" onClick={() => handleReject(claim)} disabled={processing === claim.id}>
                       <X className="h-3 w-3 mr-1" /> Reject
                     </Button>
                   </div>
