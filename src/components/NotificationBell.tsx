@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Bell, Check, CheckCheck, Trash2, ExternalLink } from "lucide-react";
+import { Bell, CheckCheck, Trash2, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -38,19 +38,18 @@ const NotificationBell = ({ userId }: { userId: string }) => {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const fetchNotifications = useCallback(async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from("notifications")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(30);
-    if (data) setNotifications(data as unknown as Notification[]);
+    if (data) setNotifications(data as Notification[]);
   }, [userId]);
 
   useEffect(() => {
     fetchNotifications();
 
-    // Realtime subscription
     const channel = supabase
       .channel("user-notifications")
       .on(
@@ -62,7 +61,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          const newNotif = payload.new as unknown as Notification;
+          const newNotif = payload.new as Notification;
           setNotifications((prev) => [newNotif, ...prev].slice(0, 30));
         }
       )
@@ -74,9 +73,9 @@ const NotificationBell = ({ userId }: { userId: string }) => {
   }, [userId, fetchNotifications]);
 
   const markAsRead = async (id: string) => {
-    await supabase
+    await (supabase as any)
       .from("notifications")
-      .update({ is_read: true } as any)
+      .update({ is_read: true })
       .eq("id", id);
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
@@ -86,9 +85,9 @@ const NotificationBell = ({ userId }: { userId: string }) => {
   const markAllRead = async () => {
     const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
     if (unreadIds.length === 0) return;
-    await supabase
+    await (supabase as any)
       .from("notifications")
-      .update({ is_read: true } as any)
+      .update({ is_read: true })
       .in("id", unreadIds);
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
   };
@@ -96,7 +95,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
   const clearAll = async () => {
     const ids = notifications.map((n) => n.id);
     if (ids.length === 0) return;
-    await supabase.from("notifications").delete().in("id", ids);
+    await (supabase as any).from("notifications").delete().in("id", ids);
     setNotifications([]);
   };
 
