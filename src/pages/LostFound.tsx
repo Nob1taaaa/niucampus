@@ -421,6 +421,7 @@ const LostFoundPage = () => {
           onOpenChange={setClaimsPanelOpen}
           postId={claimsPost.id}
           postTitle={claimsPost.title}
+          postType={claimsPost.type}
           userId={user?.id || ""}
           onChatCreated={handleChatCreated}
         />
