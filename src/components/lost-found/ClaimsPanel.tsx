@@ -20,11 +20,12 @@ interface ClaimsPanelProps {
   onOpenChange: (open: boolean) => void;
   postId: string;
   postTitle: string;
+  postType?: string;
   userId: string;
   onChatCreated: (chatId: string) => void;
 }
 
-const ClaimsPanel = ({ open, onOpenChange, postId, postTitle, userId, onChatCreated }: ClaimsPanelProps) => {
+const ClaimsPanel = ({ open, onOpenChange, postId, postTitle, postType, userId, onChatCreated }: ClaimsPanelProps) => {
   const { toast } = useToast();
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +111,7 @@ const ClaimsPanel = ({ open, onOpenChange, postId, postTitle, userId, onChatCrea
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md rounded-3xl border-primary/15 bg-card/95 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle className="text-sm">📋 Claims for "{postTitle}"</DialogTitle>
+          <DialogTitle className="text-sm">{postType === "lost" ? "🔍 Found Reports" : "📋 Claims"} for "{postTitle}"</DialogTitle>
         </DialogHeader>
         <div className="space-y-3 max-h-[400px] overflow-y-auto">
           {loading ? (
