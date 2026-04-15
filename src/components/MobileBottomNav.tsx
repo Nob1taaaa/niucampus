@@ -1,11 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, CalendarDays, MapPin, Users, HelpCircle, FileText, ClipboardList } from "lucide-react";
+import { Home, CalendarDays, MapPin, ShoppingBag, HelpCircle, FileText, ClipboardList } from "lucide-react";
 
 const prefetchMap: Record<string, () => void> = {
   "/": () => import("@/pages/Index"),
   "/events": () => import("@/pages/Events"),
   "/lost-found": () => import("@/pages/LostFound"),
-  "/study-groups": () => import("@/pages/StudyGroups"),
+  "/marketplace": () => import("@/pages/Marketplace"),
   "/qa": () => import("@/pages/QA"),
   "/materials": () => import("@/pages/StudyMaterials"),
   "/planner": () => import("@/pages/StudyPlanner"),
@@ -15,7 +15,7 @@ const tabs = [
   { path: "/", label: "Home", icon: Home },
   { path: "/events", label: "Events", icon: CalendarDays },
   { path: "/lost-found", label: "Lost", icon: MapPin },
-  { path: "/study-groups", label: "Groups", icon: Users },
+  { path: "/marketplace", label: "Market", icon: ShoppingBag },
   { path: "/qa", label: "Q&A", icon: HelpCircle },
   { path: "/planner", label: "Planner", icon: ClipboardList },
   { path: "/materials", label: "Notes", icon: FileText },

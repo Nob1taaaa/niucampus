@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home, CalendarDays, Users, HelpCircle, BookOpen, MapPin, FileText } from "lucide-react";
+import { LogOut, Home, CalendarDays, ShoppingBag, HelpCircle, BookOpen, MapPin, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import logoImage from "@/assets/logo.png";
@@ -12,7 +12,7 @@ const prefetchMap: Record<string, () => void> = {
   "/": () => import("@/pages/Index"),
   "/events": () => import("@/pages/Events"),
   "/lost-found": () => import("@/pages/LostFound"),
-  "/study-groups": () => import("@/pages/StudyGroups"),
+  "/marketplace": () => import("@/pages/Marketplace"),
   "/qa": () => import("@/pages/QA"),
   "/planner": () => import("@/pages/StudyPlanner"),
   "/materials": () => import("@/pages/StudyMaterials"),
@@ -22,7 +22,7 @@ const navLinks = [
   { path: "/", label: "Home", icon: Home },
   { path: "/events", label: "Events", icon: CalendarDays },
   { path: "/lost-found", label: "Lost & Found", icon: MapPin },
-  { path: "/study-groups", label: "Study Groups", icon: Users },
+  { path: "/marketplace", label: "Market", icon: ShoppingBag },
   { path: "/qa", label: "Q&A", icon: HelpCircle },
   { path: "/planner", label: "Planner", icon: BookOpen },
   { path: "/materials", label: "Materials", icon: FileText },

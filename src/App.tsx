@@ -15,7 +15,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const EventsPage = lazy(() => import("./pages/Events"));
 const LostFoundPage = lazy(() => import("./pages/LostFound"));
-const StudyGroupsPage = lazy(() => import("./pages/StudyGroups"));
+const MarketplacePage = lazy(() => import("./pages/Marketplace"));
 const QAPage = lazy(() => import("./pages/QA"));
 const StudyPlannerPage = lazy(() => import("./pages/StudyPlanner"));
 const StudyMaterialsPage = lazy(() => import("./pages/StudyMaterials"));
@@ -54,7 +54,7 @@ const App = () => (
             <Route path="/" element={<Layout><Index /></Layout>} />
             <Route path="/events" element={<Layout><EventsPage /></Layout>} />
             <Route path="/lost-found" element={<Layout><LostFoundPage /></Layout>} />
-            <Route path="/study-groups" element={<Layout><StudyGroupsPage /></Layout>} />
+            <Route path="/marketplace" element={<Layout><MarketplacePage /></Layout>} />
             <Route path="/qa" element={<Layout><QAPage /></Layout>} />
             <Route path="/planner" element={<Layout><StudyPlannerPage /></Layout>} />
             <Route path="/materials" element={<Layout><StudyMaterialsPage /></Layout>} />
