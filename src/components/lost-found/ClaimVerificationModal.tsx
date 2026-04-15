@@ -10,7 +10,7 @@ import { ShieldCheck, Loader2 } from "lucide-react";
 interface ClaimVerificationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  post: { id: string; title: string; secret_question: string | null; user_id: string };
+  post: { id: string; title: string; secret_question: string | null; user_id: string; type?: string };
   userId: string;
   onClaimSubmitted: (claimId: string) => void;
 }

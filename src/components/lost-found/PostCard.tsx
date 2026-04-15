@@ -102,12 +102,12 @@ const PostCard = ({ post, userId, userChatPostIds = [], onClaim, onRemove, onVie
                 size="sm"
                 className={`h-8 rounded-xl text-[0.7rem] px-4 font-semibold shadow-sm transition-all duration-200 hover:shadow-md ${
                   isLost
-                    ? "bg-gradient-to-r from-destructive to-destructive/80 text-destructive-foreground hover:from-destructive/90 hover:to-destructive/70"
-                    : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:from-primary/90 hover:to-primary/70"
+                    ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:from-primary/90 hover:to-primary/70"
+                    : "bg-gradient-to-r from-destructive to-destructive/80 text-destructive-foreground hover:from-destructive/90 hover:to-destructive/70"
                 }`}
                 onClick={() => onClaim(post)}
               >
-                {isLost ? "🔔 Notify me if found" : "🙋 I think this is mine"}
+                {isLost ? "🔍 I found this item" : "🙋 I think this is mine"}
               </Button>
             )}
             {!isOwner && hasChat && (
