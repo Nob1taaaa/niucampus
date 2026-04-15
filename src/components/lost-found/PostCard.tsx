@@ -118,7 +118,7 @@ const PostCard = ({ post, userId, userChatPostIds = [], onClaim, onRemove, onVie
             {isOwner && (
               <>
                 <Button type="button" size="sm" variant="outline" className="h-8 rounded-xl text-[0.7rem] px-3 border-primary/20" onClick={() => onViewClaims(post)}>
-                  <MessageCircle className="h-3 w-3 mr-1" /> View Claims
+                  <MessageCircle className="h-3 w-3 mr-1" /> {isLost ? "View Found Reports" : "View Claims"}
                 </Button>
                 <Button type="button" size="sm" variant="ghost" className="h-8 rounded-xl text-[0.7rem] px-3 text-destructive/70 hover:text-destructive hover:bg-destructive/8" onClick={() => onRemove(post.id)}>
                   Remove
