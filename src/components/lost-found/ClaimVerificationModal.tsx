@@ -55,21 +55,31 @@ const ClaimVerificationModal = ({ open, onOpenChange, post, userId, onClaimSubmi
     }
   };
 
-  return (
+    const isLostPost = post.type === "lost";
+
+    return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md rounded-3xl border-primary/15 bg-card/95 backdrop-blur-xl">
         <DialogHeader>
           <div className="mx-auto mb-2 h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
             <ShieldCheck className="h-6 w-6 text-primary" />
           </div>
-          <DialogTitle className="text-center text-base">Verify Your Claim</DialogTitle>
+          <DialogTitle className="text-center text-base">
+            {isLostPost ? "I Found This Item" : "Verify Your Claim"}
+          </DialogTitle>
           <DialogDescription className="text-center text-xs">
-            Claiming: <span className="font-semibold text-foreground">{post.title}</span>
+            {isLostPost ? "Reaching out to: " : "Claiming: "}
+            <span className="font-semibold text-foreground">{post.title}</span>
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
-          {post.secret_question ? (
+          {isLostPost ? (
+            <div className="rounded-2xl bg-primary/5 border border-primary/12 p-4">
+              <Label className="text-xs font-semibold text-primary mb-1 block">🔍 Describe what you found</Label>
+              <p className="text-xs text-muted-foreground">Please describe the item you found in detail — color, brand, location where you found it — so the owner can verify.</p>
+            </div>
+          ) : post.secret_question ? (
             <div className="rounded-2xl bg-primary/5 border border-primary/12 p-4">
               <Label className="text-xs font-semibold text-primary mb-1 block">🔐 Verification Question</Label>
               <p className="text-sm text-foreground font-medium">{post.secret_question}</p>
@@ -82,11 +92,17 @@ const ClaimVerificationModal = ({ open, onOpenChange, post, userId, onClaimSubmi
           )}
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Your Answer *</Label>
+            <Label className="text-xs font-medium">Your {isLostPost ? "Description" : "Answer"} *</Label>
             <Textarea
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
-              placeholder={post.secret_question ? "Type your answer here..." : "Describe your item in detail (color, brand, distinguishing marks)..."}
+              placeholder={
+                isLostPost
+                  ? "I found this item at... It looks like... (describe in detail)"
+                  : post.secret_question
+                  ? "Type your answer here..."
+                  : "Describe your item in detail (color, brand, distinguishing marks)..."
+              }
               rows={3}
               className="resize-none text-sm rounded-xl border-primary/15"
             />
@@ -102,7 +118,7 @@ const ClaimVerificationModal = ({ open, onOpenChange, post, userId, onClaimSubmi
               onClick={handleSubmit}
               disabled={submitting}
             >
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Claim"}
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : isLostPost ? "Send to Owner" : "Submit Claim"}
             </Button>
           </div>
         </div>
