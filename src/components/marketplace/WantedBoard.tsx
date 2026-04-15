@@ -13,20 +13,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { User } from "@supabase/supabase-js";
 
 interface WantedPost {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string | null;
-  budget: number | null;
-  category: string;
-  is_fulfilled: boolean;
-  created_at: string;
-  poster?: { full_name: string | null };
+  id: string; user_id: string; title: string; description: string | null; budget: number | null;
+  category: string; is_fulfilled: boolean; created_at: string; poster?: { full_name: string | null };
 }
 
-interface Props {
-  user: User | null;
-}
+interface Props { user: User | null; }
 
 const WantedBoard = ({ user }: Props) => {
   const { toast } = useToast();
@@ -38,22 +29,23 @@ const WantedBoard = ({ user }: Props) => {
 
   useEffect(() => {
     const load = async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("marketplace_wanted")
         .select("*")
         .eq("is_fulfilled", false)
         .order("created_at", { ascending: false });
       if (error) { setLoading(false); return; }
 
-      const userIds = [...new Set((data || []).map(d => d.user_id))];
+      const items = (data || []) as any[];
+      const userIds = [...new Set(items.map((d: any) => d.user_id))] as string[];
       const { data: profiles } = userIds.length > 0
         ? await supabase.from("profiles").select("id, full_name").in("id", userIds)
         : { data: [] };
 
       const profileMap: Record<string, any> = {};
-      (profiles || []).forEach(p => { profileMap[p.id] = p; });
+      ((profiles || []) as any[]).forEach((p: any) => { profileMap[p.id] = p; });
 
-      setPosts((data || []).map(d => ({ ...d, poster: profileMap[d.user_id] })));
+      setPosts(items.map((d: any) => ({ ...d, poster: profileMap[d.user_id] })));
       setLoading(false);
     };
     load();
@@ -66,32 +58,24 @@ const WantedBoard = ({ user }: Props) => {
       const mod = await moderateContent(form.title + " " + form.description, "marketplace_wanted");
       if (!mod.safe) { toast({ title: "⚠️ Content not allowed", description: mod.reason, variant: "destructive" }); return; }
 
-      const { data, error } = await supabase.from("marketplace_wanted").insert({
-        user_id: user.id,
-        title: form.title.trim(),
-        description: form.description.trim() || null,
+      const { data, error } = await (supabase as any).from("marketplace_wanted").insert({
+        user_id: user.id, title: form.title.trim(), description: form.description.trim() || null,
         budget: form.budget ? parseFloat(form.budget) : null,
       }).select().single();
-
       if (error) throw error;
-      setPosts(prev => [{ ...data, poster: { full_name: user.user_metadata?.full_name || user.email } }, ...prev]);
-      setIsOpen(false);
-      setForm({ title: "", description: "", budget: "" });
+
+      setPosts(prev => [{ ...(data as any), poster: { full_name: user.user_metadata?.full_name || user.email } }, ...prev]);
+      setIsOpen(false); setForm({ title: "", description: "", budget: "" });
       toast({ title: "Wanted post created! 📢" });
-    } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
-    } finally {
-      setSubmitting(false);
-    }
+    } catch (e: any) { toast({ title: "Error", description: e.message, variant: "destructive" }); }
+    finally { setSubmitting(false); }
   };
 
   if (loading) return (
     <div className="space-y-3">
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="rounded-2xl border border-border/40 bg-card/70 p-4 space-y-2">
-          <Skeleton className="h-4 w-48" />
-          <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-4 w-48" /><Skeleton className="h-3 w-full" /><Skeleton className="h-3 w-24" />
         </div>
       ))}
     </div>
@@ -124,9 +108,7 @@ const WantedBoard = ({ user }: Props) => {
                   {post.description && <p className="text-[0.7rem] text-muted-foreground mt-1 line-clamp-2">{post.description}</p>}
                 </div>
                 {post.budget && (
-                  <Badge variant="outline" className="border-primary/20 bg-primary/5 text-[0.6rem] shrink-0">
-                    Budget: ₹{post.budget}
-                  </Badge>
+                  <Badge variant="outline" className="border-primary/20 bg-primary/5 text-[0.6rem] shrink-0">Budget: ₹{post.budget}</Badge>
                 )}
               </div>
               <p className="text-[0.6rem] text-muted-foreground">

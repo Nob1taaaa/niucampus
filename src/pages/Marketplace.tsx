@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Plus, Search, Package, Heart, MessageCircle, Megaphone, Filter } from "lucide-react";
+import { ShoppingBag, Plus, Search, Package, MessageCircle, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -71,7 +71,7 @@ const MarketplacePage = () => {
 
   const loadListings = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("marketplace_listings")
         .select("*")
         .eq("is_sold", false)
@@ -79,28 +79,29 @@ const MarketplacePage = () => {
         .order("created_at", { ascending: false });
       if (error) throw error;
 
-      const listingIds = (data || []).map(l => l.id);
-      const userIds = [...new Set((data || []).map(l => l.user_id))];
+      const items = (data || []) as any[];
+      const listingIds = items.map((l: any) => l.id);
+      const userIds = [...new Set(items.map((l: any) => l.user_id))];
 
       const [imagesRes, profilesRes] = await Promise.all([
         listingIds.length > 0
-          ? supabase.from("marketplace_listing_images").select("*").in("listing_id", listingIds).order("position")
+          ? (supabase as any).from("marketplace_listing_images").select("*").in("listing_id", listingIds).order("position")
           : { data: [], error: null },
         userIds.length > 0
-          ? supabase.from("profiles").select("id, full_name, avatar_url").in("id", userIds)
+          ? supabase.from("profiles").select("id, full_name, avatar_url").in("id", userIds as string[])
           : { data: [], error: null },
       ]);
 
       const imagesMap: Record<string, any[]> = {};
-      (imagesRes.data || []).forEach(img => {
+      ((imagesRes.data || []) as any[]).forEach((img: any) => {
         if (!imagesMap[img.listing_id]) imagesMap[img.listing_id] = [];
         imagesMap[img.listing_id].push(img);
       });
 
       const profilesMap: Record<string, any> = {};
-      (profilesRes.data || []).forEach(p => { profilesMap[p.id] = p; });
+      ((profilesRes.data || []) as any[]).forEach((p: any) => { profilesMap[p.id] = p; });
 
-      setListings((data || []).map(l => ({
+      setListings(items.map((l: any) => ({
         ...l,
         images: imagesMap[l.id] || [],
         seller: profilesMap[l.user_id] || null,
@@ -129,7 +130,7 @@ const MarketplacePage = () => {
   }).sort((a, b) => {
     if (sortBy === "price_low") return a.price - b.price;
     if (sortBy === "price_high") return b.price - a.price;
-    return 0; // already sorted by date from DB
+    return 0;
   });
 
   if (selectedListing) {
@@ -181,42 +182,26 @@ const MarketplacePage = () => {
         </TabsList>
 
         <TabsContent value="browse" className="space-y-4 mt-0">
-          {/* Categories */}
           <CategoryGrid
             categories={CATEGORIES}
             selected={selectedCategory}
             onSelect={(cat) => setSelectedCategory(cat === selectedCategory ? null : cat)}
           />
 
-          {/* Search & Sort */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search items..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-9 rounded-xl h-9 text-xs"
-              />
+              <Input placeholder="Search items..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 rounded-xl h-9 text-xs" />
             </div>
             <div className="flex gap-1.5">
               {(["date", "price_low", "price_high"] as const).map(s => (
-                <button
-                  key={s}
-                  onClick={() => setSortBy(s)}
-                  className={`rounded-full px-3 py-1.5 text-[0.65rem] font-medium transition-all border ${
-                    sortBy === s
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card/60 text-muted-foreground border-border/40 hover:border-primary/30"
-                  }`}
-                >
+                <button key={s} onClick={() => setSortBy(s)} className={`rounded-full px-3 py-1.5 text-[0.65rem] font-medium transition-all border ${sortBy === s ? "bg-primary text-primary-foreground border-primary" : "bg-card/60 text-muted-foreground border-border/40 hover:border-primary/30"}`}>
                   {s === "date" ? "Latest" : s === "price_low" ? "₹ Low" : "₹ High"}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Listings */}
           {loading ? (
             <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
@@ -238,11 +223,7 @@ const MarketplacePage = () => {
           ) : (
             <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {filtered.map(listing => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  onClick={() => setSelectedListing(listing)}
-                />
+                <ListingCard key={listing.id} listing={listing} onClick={() => setSelectedListing(listing)} />
               ))}
             </div>
           )}
@@ -261,12 +242,7 @@ const MarketplacePage = () => {
         </TabsContent>
       </Tabs>
 
-      <PostItemDialog
-        open={isPostOpen}
-        onOpenChange={setIsPostOpen}
-        user={user}
-        onSuccess={() => { loadListings(); setIsPostOpen(false); }}
-      />
+      <PostItemDialog open={isPostOpen} onOpenChange={setIsPostOpen} user={user} onSuccess={() => { loadListings(); setIsPostOpen(false); }} />
     </main>
   );
 };

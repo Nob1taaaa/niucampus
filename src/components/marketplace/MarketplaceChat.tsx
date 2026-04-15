@@ -8,21 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { User } from "@supabase/supabase-js";
 
 interface Chat {
-  id: string;
-  listing_id: string;
-  buyer_id: string;
-  seller_id: string;
-  created_at: string;
-  listing_title?: string;
-  other_name?: string;
+  id: string; listing_id: string; buyer_id: string; seller_id: string; created_at: string;
+  listing_title?: string; other_name?: string;
 }
 
 interface Message {
-  id: string;
-  chat_id: string;
-  sender_id: string;
-  content: string;
-  created_at: string;
+  id: string; chat_id: string; sender_id: string; content: string; created_at: string;
 }
 
 interface Props {
@@ -41,66 +32,59 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
   const [sending, setSending] = useState(false);
   const msgEndRef = useRef<HTMLDivElement>(null);
 
-  // Load chats
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("marketplace_chats")
         .select("*")
         .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
         .order("created_at", { ascending: false });
       if (error) { setLoading(false); return; }
 
-      const chatData = data || [];
-      // Get listing titles and other user names
-      const listingIds = [...new Set(chatData.map(c => c.listing_id))];
-      const otherUserIds = [...new Set(chatData.map(c => c.buyer_id === user.id ? c.seller_id : c.buyer_id))];
+      const chatData = ((data || []) as any[]);
+      const listingIds = [...new Set(chatData.map((c: any) => c.listing_id))] as string[];
+      const otherUserIds = [...new Set(chatData.map((c: any) => c.buyer_id === user.id ? c.seller_id : c.buyer_id))] as string[];
 
       const [listingsRes, profilesRes] = await Promise.all([
-        listingIds.length > 0 ? supabase.from("marketplace_listings").select("id, title").in("id", listingIds) : { data: [] },
+        listingIds.length > 0 ? (supabase as any).from("marketplace_listings").select("id, title").in("id", listingIds) : { data: [] },
         otherUserIds.length > 0 ? supabase.from("profiles").select("id, full_name").in("id", otherUserIds) : { data: [] },
       ]);
 
       const listingMap: Record<string, string> = {};
-      (listingsRes.data || []).forEach(l => { listingMap[l.id] = l.title; });
+      ((listingsRes.data || []) as any[]).forEach((l: any) => { listingMap[l.id] = l.title; });
       const profileMap: Record<string, string> = {};
-      (profilesRes.data || []).forEach(p => { profileMap[p.id] = p.full_name || "Student"; });
+      ((profilesRes.data || []) as any[]).forEach((p: any) => { profileMap[p.id] = p.full_name || "Student"; });
 
-      const enriched = chatData.map(c => ({
+      const enriched: Chat[] = chatData.map((c: any) => ({
         ...c,
         listing_title: listingMap[c.listing_id] || "Item",
         other_name: profileMap[c.buyer_id === user.id ? c.seller_id : c.buyer_id] || "Student",
       }));
 
       setChats(enriched);
-
-      // Auto-select chat for specific listing
       if (listingId) {
         const match = enriched.find(c => c.listing_id === listingId);
         if (match) setSelectedChat(match.id);
       }
-
       setLoading(false);
     };
     load();
   }, [user, listingId]);
 
-  // Load messages for selected chat
   useEffect(() => {
     if (!selectedChat) return;
     const load = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("marketplace_messages")
         .select("*")
         .eq("chat_id", selectedChat)
         .order("created_at", { ascending: true });
-      setMessages(data || []);
+      setMessages(((data || []) as Message[]));
       setTimeout(() => msgEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
     };
     load();
 
-    // Real-time subscription
     const channel = supabase
       .channel(`market-chat-${selectedChat}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "marketplace_messages", filter: `chat_id=eq.${selectedChat}` },
@@ -117,10 +101,8 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
   const handleSend = async () => {
     if (!user || !selectedChat || !newMsg.trim() || sending) return;
     setSending(true);
-    const { error } = await supabase.from("marketplace_messages").insert({
-      chat_id: selectedChat,
-      sender_id: user.id,
-      content: newMsg.trim(),
+    const { error } = await (supabase as any).from("marketplace_messages").insert({
+      chat_id: selectedChat, sender_id: user.id, content: newMsg.trim(),
     });
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else setNewMsg("");
@@ -138,12 +120,10 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
     </div>
   );
 
-  // Chat detail view
   if (selectedChat) {
     const chat = chats.find(c => c.id === selectedChat);
     return (
       <div className="rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm overflow-hidden flex flex-col" style={{ height: "calc(100dvh - 200px)" }}>
-        {/* Header */}
         <div className="flex items-center gap-2 p-3 border-b border-border/40 bg-card/50">
           <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => setSelectedChat(null)}>
             <ArrowLeft className="h-4 w-4" />
@@ -153,21 +133,13 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
             <p className="text-[0.6rem] text-muted-foreground truncate">Re: {chat?.listing_title}</p>
           </div>
         </div>
-
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
-          {messages.length === 0 && (
-            <p className="text-center text-xs text-muted-foreground py-8">Start the conversation! 💬</p>
-          )}
+          {messages.length === 0 && <p className="text-center text-xs text-muted-foreground py-8">Start the conversation! 💬</p>}
           {messages.map(msg => {
             const isMine = msg.sender_id === user?.id;
             return (
               <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-xs ${
-                  isMine
-                    ? "bg-primary text-primary-foreground rounded-br-md"
-                    : "bg-muted/30 border border-border/40 text-foreground rounded-bl-md"
-                }`}>
+                <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-xs ${isMine ? "bg-primary text-primary-foreground rounded-br-md" : "bg-muted/30 border border-border/40 text-foreground rounded-bl-md"}`}>
                   <p>{msg.content}</p>
                   <p className={`text-[0.5rem] mt-1 ${isMine ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
                     {new Date(msg.created_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
@@ -178,16 +150,9 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
           })}
           <div ref={msgEndRef} />
         </div>
-
-        {/* Input */}
         <div className="p-2 border-t border-border/40 bg-card/50">
           <form onSubmit={e => { e.preventDefault(); handleSend(); }} className="flex gap-2">
-            <Input
-              value={newMsg}
-              onChange={e => setNewMsg(e.target.value)}
-              placeholder="Type a message..."
-              className="flex-1 rounded-xl text-xs h-9"
-            />
+            <Input value={newMsg} onChange={e => setNewMsg(e.target.value)} placeholder="Type a message..." className="flex-1 rounded-xl text-xs h-9" />
             <Button type="submit" size="icon" disabled={sending || !newMsg.trim()} className="h-9 w-9 rounded-xl">
               <Send className="h-3.5 w-3.5" />
             </Button>
@@ -197,7 +162,6 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
     );
   }
 
-  // Chat list
   return (
     <div className="space-y-3">
       {chats.length === 0 ? (
@@ -210,11 +174,7 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
         </div>
       ) : (
         chats.map(chat => (
-          <button
-            key={chat.id}
-            onClick={() => setSelectedChat(chat.id)}
-            className="w-full rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm p-3 sm:p-4 flex items-center gap-3 text-left transition-all hover:border-primary/25 hover:bg-card/90"
-          >
+          <button key={chat.id} onClick={() => setSelectedChat(chat.id)} className="w-full rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm p-3 sm:p-4 flex items-center gap-3 text-left transition-all hover:border-primary/25 hover:bg-card/90">
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent-foreground flex items-center justify-center text-sm font-bold text-primary-foreground ring-2 ring-primary/20 shrink-0">
               {chat.other_name?.charAt(0)?.toUpperCase() || "?"}
             </div>
