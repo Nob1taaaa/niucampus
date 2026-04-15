@@ -37,7 +37,7 @@ const ClaimVerificationModal = ({ open, onOpenChange, post, userId, onClaimSubmi
       // Send notification to post owner
       supabase.functions.invoke("notify-claim", {
         body: {
-          type: "claim",
+          type: post.type === "lost" ? "found_report" : "claim",
           post_id: post.id,
           post_title: post.title,
           target_user_id: post.user_id,

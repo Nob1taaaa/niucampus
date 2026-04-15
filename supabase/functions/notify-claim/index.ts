@@ -56,6 +56,10 @@ serve(async (req) => {
         title = "New lost item reported 📦";
         message = `"${post_title || "An item"}" was just reported. Check if it's yours!`;
         break;
+      case "found_report":
+        title = "Someone found your item! 🎉";
+        message = `A student says they found "${post_title || "your item"}". Review their message now!`;
+        break;
       default:
         title = "Notification";
         message = "You have a new notification.";
