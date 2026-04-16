@@ -117,6 +117,28 @@ const MarketplacePage = () => {
     if (user) loadListings();
   }, [user, loadListings]);
 
+  // Handle browser back button — return to browse state instead of leaving marketplace
+  useEffect(() => {
+    const isSubView = selectedListing || (activeChatListingId && tab === "chat") || tab !== "browse";
+    if (isSubView) {
+      window.history.pushState({ marketplaceView: true }, "");
+    }
+
+    const handlePopState = () => {
+      if (selectedListing) {
+        setSelectedListing(null);
+      } else if (activeChatListingId && tab === "chat") {
+        setActiveChatListingId(null);
+        setTab("browse");
+      } else if (tab !== "browse") {
+        setTab("browse");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [selectedListing, activeChatListingId, tab]);
+
   const filtered = listings.filter(l => {
     if (selectedCategory && selectedCategory !== "all") {
       if (selectedCategory === "free") { if (!l.is_free) return false; }
