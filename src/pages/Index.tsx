@@ -32,9 +32,9 @@ const Index = () => {
       path: "/lost-found", accent: "from-rose-500/20 to-orange-500/10",
     },
     {
-      emoji: "👥", title: "Study Groups",
-      desc: "Join or create groups for any subject",
-      path: "/study-groups", accent: "from-violet-500/20 to-indigo-500/10",
+      emoji: "🏪", title: "NIU Bazaar",
+      desc: "Buy, sell, or give away items on campus",
+      path: "/marketplace", accent: "from-violet-500/20 to-indigo-500/10",
     },
     {
       emoji: "❓", title: "Q&A",

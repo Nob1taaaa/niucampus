@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Plus, Search, Package, MessageCircle, Megaphone } from "lucide-react";
+import { ShoppingBag, Plus, Search, Package, MessageCircle, Megaphone, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -148,10 +148,15 @@ const MarketplacePage = () => {
   if (activeChatListingId && tab === "chat") {
     return (
       <main className="mx-auto max-w-6xl px-3 pb-16 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+        <div className="mb-3">
+          <Button variant="ghost" size="sm" className="rounded-xl text-xs gap-1.5" onClick={() => { setActiveChatListingId(null); setTab("browse"); }}>
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to Market
+          </Button>
+        </div>
         <MarketplaceChat
           listingId={activeChatListingId}
           user={user}
-          onBack={() => setActiveChatListingId(null)}
+          onBack={() => { setActiveChatListingId(null); setTab("browse"); }}
         />
       </main>
     );

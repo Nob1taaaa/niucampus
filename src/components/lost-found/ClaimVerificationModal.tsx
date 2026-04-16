@@ -59,7 +59,7 @@ const ClaimVerificationModal = ({ open, onOpenChange, post, userId, onClaimSubmi
 
     return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-3xl border-primary/15 bg-card/95 backdrop-blur-xl">
+      <DialogContent className="sm:max-w-md rounded-3xl border-primary/15 bg-card/95 backdrop-blur-xl max-h-[85dvh] overflow-y-auto">
         <DialogHeader>
           <div className="mx-auto mb-2 h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
             <ShieldCheck className="h-6 w-6 text-primary" />

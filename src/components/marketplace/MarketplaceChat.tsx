@@ -123,7 +123,7 @@ const MarketplaceChat = ({ listingId, user, onBack }: Props) => {
   if (selectedChat) {
     const chat = chats.find(c => c.id === selectedChat);
     return (
-      <div className="rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm overflow-hidden flex flex-col" style={{ height: "calc(100dvh - 200px)" }}>
+      <div className="rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm overflow-hidden flex flex-col" style={{ height: "min(calc(100dvh - 200px), 600px)" }}>
         <div className="flex items-center gap-2 p-3 border-b border-border/40 bg-card/50">
           <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => setSelectedChat(null)}>
             <ArrowLeft className="h-4 w-4" />
