@@ -519,6 +519,177 @@ export type Database = {
           },
         ]
       }
+      marketplace_chats: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          listing_id: string
+          seller_id: string
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          seller_id: string
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          seller_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_chats_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_listing_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          listing_id: string
+          position: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          listing_id: string
+          position?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          listing_id?: string
+          position?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listing_images_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_listings: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_free: boolean | null
+          is_sold: boolean | null
+          is_urgent: boolean | null
+          price: number | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_free?: boolean | null
+          is_sold?: boolean | null
+          is_urgent?: boolean | null
+          price?: number | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_free?: boolean | null
+          is_sold?: boolean | null
+          is_urgent?: boolean | null
+          price?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      marketplace_messages: {
+        Row: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          chat_id: string
+          content: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          chat_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_wanted: {
+        Row: {
+          budget: number | null
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_fulfilled: boolean | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          budget?: number | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_fulfilled?: boolean | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          budget?: number | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_fulfilled?: boolean | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
