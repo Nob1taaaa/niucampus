@@ -161,7 +161,7 @@ const PrivateChat = ({ open, onOpenChange, chatId, userId, postTitle, onItemRetu
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col rounded-3xl border-primary/15 bg-card/95 backdrop-blur-xl p-0 gap-0">
+      <DialogContent className="sm:max-w-lg max-h-[80dvh] flex flex-col rounded-3xl border-primary/15 bg-card/95 backdrop-blur-xl p-0 gap-0" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-primary/10">
           <DialogTitle className="text-sm flex items-center gap-2">
             <MessageCircle className="h-4 w-4 text-primary" />
