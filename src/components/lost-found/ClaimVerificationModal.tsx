@@ -96,6 +96,9 @@ const ClaimVerificationModal = ({ open, onOpenChange, post, userId, onClaimSubmi
             <Textarea
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
+              onFocus={(e) => {
+                setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+              }}
               placeholder={
                 isLostPost
                   ? "I found this item at... It looks like... (describe in detail)"

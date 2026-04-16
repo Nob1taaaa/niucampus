@@ -253,6 +253,9 @@ const PrivateChat = ({ open, onOpenChange, chatId, userId, postTitle, onItemRetu
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
               className="flex-1 h-9 text-xs rounded-xl border-primary/15"
+              onFocus={(e) => {
+                setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+              }}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(newMessage); } }}
             />
             <Button type="button" size="sm" className="h-9 w-9 rounded-xl bg-gradient-to-r from-primary to-primary/80 p-0" onClick={() => sendMessage(newMessage)} disabled={sending || !newMessage.trim()}>
