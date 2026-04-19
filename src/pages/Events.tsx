@@ -187,17 +187,26 @@ const EventsPage = () => {
         </Card>
       ) : (
         <section className="grid gap-4 sm:grid-cols-2">
-          {filteredEvents.map((event) => (
-            <Card key={event.id} className="hover-scale group border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden transition-all hover:shadow-md hover:border-primary/25">
-              <div className="h-1.5 bg-gradient-to-r from-primary via-primary/60 to-accent-foreground/40" />
+          {filteredEvents.map((event) => {
+            const past = isPastEvent(event);
+            return (
+            <Card key={event.id} className={`hover-scale group border-primary/12 bg-card/70 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden transition-all hover:shadow-md hover:border-primary/25 ${past ? "opacity-75" : ""}`}>
+              <div className={`h-1.5 ${past ? "bg-gradient-to-r from-muted-foreground/30 to-muted-foreground/10" : "bg-gradient-to-r from-primary via-primary/60 to-accent-foreground/40"}`} />
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-3">
                   <CardTitle className="text-base font-bold text-foreground leading-snug">{event.title}</CardTitle>
-                  {event.category && (
-                    <Badge className="bg-primary/10 border-primary/25 text-primary text-xs font-semibold shrink-0">
-                      {event.category}
-                    </Badge>
-                  )}
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    {past && (
+                      <Badge variant="outline" className="border-muted text-muted-foreground text-[0.6rem] font-semibold">
+                        ✓ Past
+                      </Badge>
+                    )}
+                    {event.category && (
+                      <Badge className="bg-primary/10 border-primary/25 text-primary text-xs font-semibold">
+                        {event.category}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 {event.description && (
                   <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{event.description}</p>
@@ -205,7 +214,7 @@ const EventsPage = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className="bg-primary/8 border-primary/20 text-primary font-semibold text-xs">
+                  <Badge variant="outline" className={`font-semibold text-xs ${past ? "bg-muted/30 border-muted text-muted-foreground" : "bg-primary/8 border-primary/20 text-primary"}`}>
                     <CalendarDays className="h-3 w-3 mr-1" />
                     {new Date(event.event_date).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
                   </Badge>
@@ -221,18 +230,21 @@ const EventsPage = () => {
                       Remove
                     </Button>
                   )}
-                  <Button
-                    size="sm"
-                    className={`h-8 rounded-full px-4 text-xs font-semibold ${interestedEvents.has(event.id) ? "bg-primary/10 text-primary border border-primary/25 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/25" : ""}`}
-                    variant={interestedEvents.has(event.id) ? "outline" : "default"}
-                    onClick={() => handleToggleInterested(event)}
-                  >
-                    {interestedEvents.has(event.id) ? "✗ Not Interested" : <>Mark interested <ArrowRight className="ml-1 h-3 w-3" /></>}
-                  </Button>
+                  {!past && (
+                    <Button
+                      size="sm"
+                      className={`h-8 rounded-full px-4 text-xs font-semibold ${interestedEvents.has(event.id) ? "bg-primary/10 text-primary border border-primary/25 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/25" : ""}`}
+                      variant={interestedEvents.has(event.id) ? "outline" : "default"}
+                      onClick={() => handleToggleInterested(event)}
+                    >
+                      {interestedEvents.has(event.id) ? "✗ Not Interested" : <>Mark interested <ArrowRight className="ml-1 h-3 w-3" /></>}
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </section>
       )}
 
