@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import ReunionFeed from "@/components/lost-found/ReunionFeed";
+import FeedbackButton from "@/components/FeedbackButton";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -97,6 +98,14 @@ const Index = () => {
                 <CalendarDays className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                 Events
               </Button>
+            </div>
+
+            {/* Inline feedback strip — visible above the fold */}
+            <div className="flex items-center gap-2 pt-1 sm:pt-2">
+              <span className="text-[0.65rem] sm:text-xs text-muted-foreground/80 italic">
+                Got an idea?
+              </span>
+              <FeedbackButton variant="footer" />
             </div>
           </div>
         </section>
