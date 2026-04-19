@@ -62,8 +62,8 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
         >
           <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping opacity-40" />
           <MessageSquareHeart className="relative h-[18px] w-[18px]" />
-          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-rose-500 ring-2 ring-background">
-            <Heart className="h-2 w-2 text-white fill-white" />
+          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive ring-2 ring-background">
+            <Heart className="h-2 w-2 text-destructive-foreground fill-destructive-foreground" />
           </span>
         </button>
       ) : (
