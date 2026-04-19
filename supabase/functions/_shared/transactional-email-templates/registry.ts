@@ -10,7 +10,9 @@ export interface TemplateEntry {
 }
 
 import { template as studyPlanReminder } from './study-plan-reminder.tsx'
+import { template as userFeedback } from './user-feedback.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'study-plan-reminder': studyPlanReminder,
+  'user-feedback': userFeedback,
 }
