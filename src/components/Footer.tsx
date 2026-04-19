@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, Users, HelpCircle, BookOpen, MapPin, Heart, Sparkles, ArrowUpRight } from "lucide-react";
 import logoImage from "@/assets/logo.png";
+import FeedbackButton from "./FeedbackButton";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -73,13 +74,16 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-2 border-t border-border/20 pt-6 text-center">
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            Made with <Heart className="h-3 w-3 text-destructive fill-destructive animate-pulse" /> for NIU Connect
-          </p>
-          <p className="text-[0.6rem] text-muted-foreground/50">
-            © {new Date().getFullYear()} NIU Connect. All rights reserved.
-          </p>
+        <div className="mt-10 flex flex-col items-center gap-4 border-t border-border/20 pt-6 text-center">
+          <FeedbackButton variant="footer" />
+          <div className="flex flex-col items-center gap-2">
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              Made with <Heart className="h-3 w-3 text-destructive fill-destructive animate-pulse" /> for NIU Connect
+            </p>
+            <p className="text-[0.6rem] text-muted-foreground/50">
+              © {new Date().getFullYear()} NIU Connect. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
