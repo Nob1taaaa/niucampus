@@ -74,12 +74,22 @@ const EventsPage = () => {
     } catch (error: any) { console.error("Error loading interested events:", error); }
   };
 
+  const isPastEvent = (event: Event) => new Date(event.event_date) < new Date(new Date().toDateString());
+
   const filteredEvents = events
-    .filter((event) => new Date(event.event_date) >= new Date(new Date().toDateString()))
     .filter((event) => {
       const query = search.trim().toLowerCase();
       if (!query) return true;
       return event.title.toLowerCase().includes(query) || event.description?.toLowerCase().includes(query) || event.location?.toLowerCase().includes(query) || event.category?.toLowerCase().includes(query);
+    })
+    .sort((a, b) => {
+      const aPast = isPastEvent(a);
+      const bPast = isPastEvent(b);
+      if (aPast !== bPast) return aPast ? 1 : -1; // upcoming first
+      // upcoming: earliest first; past: most recent first
+      return aPast
+        ? new Date(b.event_date).getTime() - new Date(a.event_date).getTime()
+        : new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
     });
 
   const handleToggleInterested = async (event: Event) => {
