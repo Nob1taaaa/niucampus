@@ -57,11 +57,14 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
       {variant === "floating" ? (
         <button
           onClick={() => setOpen(true)}
-          className="group fixed bottom-20 right-4 z-40 md:bottom-6 md:right-6 flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-4 py-3 text-primary-foreground shadow-lg shadow-primary/30 ring-1 ring-primary/20 backdrop-blur-xl transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/40"
+          className="group fixed bottom-[68px] left-3 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/40 ring-2 ring-background transition-all active:scale-90"
           aria-label="Send feedback"
         >
-          <MessageSquareHeart className="h-4 w-4 animate-pulse" />
-          <span className="text-xs font-semibold hidden sm:inline">Feedback</span>
+          <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping opacity-40" />
+          <MessageSquareHeart className="relative h-[18px] w-[18px]" />
+          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive ring-2 ring-background">
+            <Heart className="h-2 w-2 text-destructive-foreground fill-destructive-foreground" />
+          </span>
         </button>
       ) : (
         <button
