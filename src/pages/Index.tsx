@@ -99,6 +99,14 @@ const Index = () => {
                 Events
               </Button>
             </div>
+
+            {/* Inline feedback strip — visible above the fold */}
+            <div className="flex items-center gap-2 pt-1 sm:pt-2">
+              <span className="text-[0.65rem] sm:text-xs text-muted-foreground/80 italic">
+                Got an idea?
+              </span>
+              <FeedbackButton variant="footer" />
+            </div>
           </div>
         </section>
 
