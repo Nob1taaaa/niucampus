@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import ReunionFeed from "@/components/lost-found/ReunionFeed";
+import FeedbackButton from "@/components/FeedbackButton";
 
 const Index = () => {
   const navigate = useNavigate();
