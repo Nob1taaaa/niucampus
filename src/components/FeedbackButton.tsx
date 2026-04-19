@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Mail, Send, Sparkles, Heart, X, MessageSquareHeart } from "lucide-react";
+import { Send, Sparkles, Heart, MessageSquareHeart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-
-const FEEDBACK_EMAIL = "niucampusorg@gmail.com";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FeedbackButtonProps {
   variant?: "footer" | "floating";
@@ -15,6 +14,7 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
   const [open, setOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [category, setCategory] = useState<string>("idea");
+  const [sending, setSending] = useState(false);
 
   const categories = [
     { id: "idea", label: "💡 Idea", desc: "I have a feature suggestion" },
@@ -23,7 +23,8 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
     { id: "other", label: "✨ Other", desc: "Something else" },
   ];
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    if (sending) return;
     if (!feedback.trim()) {
       toast({
         title: "Tell us something first 😊",
@@ -33,23 +34,55 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
       return;
     }
 
-    const selectedCat = categories.find((c) => c.id === category);
-    const subject = `[NIU Connect Feedback] ${selectedCat?.label || "Feedback"}`;
-    const body = `Hi NIU Connect Team,\n\nCategory: ${selectedCat?.label}\n\n${feedback}\n\n— Sent from NIU Connect`;
-    const mailto = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSending(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Please sign in first",
+          description: "Sign in to send feedback so we can follow up if needed.",
+          variant: "destructive",
+        });
+        setSending(false);
+        return;
+      }
 
-    window.location.href = mailto;
+      const selectedCat = categories.find((c) => c.id === category);
+      const fromUser = session.user.email || "Anonymous user";
 
-    toast({
-      title: "Opening your email app... 💌",
-      description: "Just hit send and your feedback will reach us!",
-    });
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "user-feedback",
+          idempotencyKey: `feedback-${session.user.id}-${Date.now()}`,
+          templateData: {
+            category: selectedCat?.label || "Other",
+            message: feedback.trim(),
+            fromUser,
+            submittedAt: new Date().toLocaleString(),
+          },
+        },
+      });
 
-    setTimeout(() => {
+      if (error) throw error;
+
+      toast({
+        title: "Feedback sent! 💌",
+        description: "Thank you — your ideas help us make NIU Connect better.",
+      });
+
       setOpen(false);
       setFeedback("");
       setCategory("idea");
-    }, 800);
+    } catch (err) {
+      console.error("Feedback send failed:", err);
+      toast({
+        title: "Couldn't send feedback",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -77,7 +110,7 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
         </button>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(v) => !sending && setOpen(v)}>
         <DialogContent className="sm:max-w-md rounded-3xl border-primary/15 bg-card/95 backdrop-blur-xl max-h-[85dvh] overflow-y-auto p-0">
           {/* Decorative top */}
           <div className="relative overflow-hidden rounded-t-3xl bg-gradient-to-br from-primary/15 via-primary/5 to-transparent px-6 pt-8 pb-5">
@@ -110,11 +143,12 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
                   <button
                     key={cat.id}
                     onClick={() => setCategory(cat.id)}
+                    disabled={sending}
                     className={`rounded-2xl border-2 px-3 py-2.5 text-left transition-all ${
                       category === cat.id
                         ? "border-primary bg-primary/10 shadow-sm shadow-primary/20"
                         : "border-border/50 bg-muted/20 hover:border-primary/30 hover:bg-primary/5"
-                    }`}
+                    } disabled:opacity-50`}
                   >
                     <div className="text-sm font-semibold">{cat.label}</div>
                     <div className="text-[0.65rem] text-muted-foreground mt-0.5">{cat.desc}</div>
@@ -139,10 +173,11 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
                 placeholder="Tell us what you love, what's broken, or what you wish existed in NIU Connect..."
                 className="min-h-[120px] resize-none rounded-2xl"
                 maxLength={1000}
+                disabled={sending}
               />
               <div className="mt-1 flex items-center justify-between">
                 <p className="text-[0.65rem] text-muted-foreground/70">
-                  Sends to <span className="font-mono text-primary">{FEEDBACK_EMAIL}</span>
+                  Sent directly to the NIU Connect team 💌
                 </p>
                 <p className="text-[0.65rem] text-muted-foreground/70">{feedback.length}/1000</p>
               </div>
@@ -153,16 +188,27 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
               <Button
                 variant="outline"
                 onClick={() => setOpen(false)}
+                disabled={sending}
                 className="flex-1 rounded-2xl"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSend}
+                disabled={sending}
                 className="flex-1 rounded-2xl bg-gradient-to-r from-primary to-primary/85 shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40"
               >
-                <Send className="h-3.5 w-3.5" />
-                Send Feedback
+                {sending ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-3.5 w-3.5" />
+                    Send Feedback
+                  </>
+                )}
               </Button>
             </div>
           </div>
