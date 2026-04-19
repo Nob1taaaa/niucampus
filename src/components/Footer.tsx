@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, Users, HelpCircle, BookOpen, MapPin, Heart, Sparkles, ArrowUpRight } from "lucide-react";
 import logoImage from "@/assets/logo.png";
+import FeedbackButton from "./FeedbackButton";
 
 const Footer = () => {
   const navigate = useNavigate();
