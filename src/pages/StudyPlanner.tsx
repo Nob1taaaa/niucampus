@@ -343,6 +343,14 @@ const StudyPlannerPage = () => {
           </Card>
         </div>
       </section>
+
+      <EmailSentDialog
+        open={emailSuccessOpen}
+        onOpenChange={setEmailSuccessOpen}
+        title="📧 Plan sent to your email!"
+        description="Your personalised study roadmap is on its way. Check your inbox — even offline, it'll be there when you need it."
+        recipient={session?.user?.email || undefined}
+      />
     </main>
   );
 };
