@@ -13,6 +13,7 @@ import { Sparkles, Target, Clock, BookOpen, Mail, CalendarDays, Send, CheckCircl
 import { Session } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
 import PageHeader from "@/components/PageHeader";
+import EmailSentDialog from "@/components/EmailSentDialog";
 
 const focusOptions = [
   // Engineering & Technology
@@ -75,6 +76,7 @@ const StudyPlannerPage = () => {
   const [reminderSent, setReminderSent] = useState(false);
   const [isSendingReminder, setIsSendingReminder] = useState(false);
   const [examPrepDate, setExamPrepDate] = useState("");
+  const [emailSuccessOpen, setEmailSuccessOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -143,7 +145,7 @@ const StudyPlannerPage = () => {
       });
       if (error) throw error;
       setReminderSent(true);
-      toast({ title: "📧 Plan sent to your email!", description: `Check ${session.user.email} for your study roadmap.` });
+      setEmailSuccessOpen(true);
     } catch {
       toast({ title: "Could not send email", description: "Please try again in a moment.", variant: "destructive" });
     }
@@ -341,6 +343,14 @@ const StudyPlannerPage = () => {
           </Card>
         </div>
       </section>
+
+      <EmailSentDialog
+        open={emailSuccessOpen}
+        onOpenChange={setEmailSuccessOpen}
+        title="📧 Plan sent to your email!"
+        description="Your personalised study roadmap is on its way. Check your inbox — even offline, it'll be there when you need it."
+        recipient={session?.user?.email || undefined}
+      />
     </main>
   );
 };

@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import EmailSentDialog from "@/components/EmailSentDialog";
 
 interface FeedbackButtonProps {
   variant?: "footer" | "floating";
@@ -15,6 +16,8 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
   const [feedback, setFeedback] = useState("");
   const [category, setCategory] = useState<string>("idea");
   const [sending, setSending] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [sentTo, setSentTo] = useState<string>("");
 
   const categories = [
     { id: "idea", label: "💡 Idea", desc: "I have a feature suggestion" },
@@ -65,14 +68,11 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
 
       if (error) throw error;
 
-      toast({
-        title: "Feedback sent! 💌",
-        description: "Thank you — your ideas help us make NIU Connect better.",
-      });
-
+      setSentTo(fromUser);
       setOpen(false);
       setFeedback("");
       setCategory("idea");
+      setSuccessOpen(true);
     } catch (err) {
       console.error("Feedback send failed:", err);
       toast({
@@ -214,6 +214,14 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <EmailSentDialog
+        open={successOpen}
+        onOpenChange={setSuccessOpen}
+        title="Feedback sent! 💌"
+        description="Thank you — your ideas help us shape what we build next in NIU Connect."
+        recipient={sentTo}
+      />
     </>
   );
 };
