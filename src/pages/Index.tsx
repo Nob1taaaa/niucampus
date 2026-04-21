@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import ReunionFeed from "@/components/lost-found/ReunionFeed";
 import FeedbackButton from "@/components/FeedbackButton";
+import PersonalDashboard from "@/components/PersonalDashboard";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -109,6 +110,9 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Personalized dashboard — only for signed-in users */}
+        {user && <PersonalDashboard user={user} />}
 
         {/* Features grid */}
         <section className="mb-4 sm:mb-10">
