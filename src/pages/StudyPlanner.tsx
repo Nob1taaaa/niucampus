@@ -13,6 +13,7 @@ import { Sparkles, Target, Clock, BookOpen, Mail, CalendarDays, Send, CheckCircl
 import { Session } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
 import PageHeader from "@/components/PageHeader";
+import EmailSentDialog from "@/components/EmailSentDialog";
 
 const focusOptions = [
   // Engineering & Technology
