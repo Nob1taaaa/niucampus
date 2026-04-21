@@ -145,7 +145,7 @@ const StudyPlannerPage = () => {
       });
       if (error) throw error;
       setReminderSent(true);
-      toast({ title: "📧 Plan sent to your email!", description: `Check ${session.user.email} for your study roadmap.` });
+      setEmailSuccessOpen(true);
     } catch {
       toast({ title: "Could not send email", description: "Please try again in a moment.", variant: "destructive" });
     }
