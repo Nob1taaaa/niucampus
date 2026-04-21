@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import EmailSentDialog from "@/components/EmailSentDialog";
 
 interface FeedbackButtonProps {
   variant?: "footer" | "floating";
