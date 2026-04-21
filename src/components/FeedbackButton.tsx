@@ -16,6 +16,8 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
   const [feedback, setFeedback] = useState("");
   const [category, setCategory] = useState<string>("idea");
   const [sending, setSending] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [sentTo, setSentTo] = useState<string>("");
 
   const categories = [
     { id: "idea", label: "💡 Idea", desc: "I have a feature suggestion" },
