@@ -214,6 +214,14 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <EmailSentDialog
+        open={successOpen}
+        onOpenChange={setSuccessOpen}
+        title="Feedback sent! 💌"
+        description="Thank you — your ideas help us shape what we build next in NIU Connect."
+        recipient={sentTo}
+      />
     </>
   );
 };
