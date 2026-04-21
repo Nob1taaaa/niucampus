@@ -68,14 +68,11 @@ const FeedbackButton = ({ variant = "footer" }: FeedbackButtonProps) => {
 
       if (error) throw error;
 
-      toast({
-        title: "Feedback sent! 💌",
-        description: "Thank you — your ideas help us make NIU Connect better.",
-      });
-
+      setSentTo(fromUser);
       setOpen(false);
       setFeedback("");
       setCategory("idea");
+      setSuccessOpen(true);
     } catch (err) {
       console.error("Feedback send failed:", err);
       toast({
