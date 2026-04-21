@@ -76,6 +76,7 @@ const StudyPlannerPage = () => {
   const [reminderSent, setReminderSent] = useState(false);
   const [isSendingReminder, setIsSendingReminder] = useState(false);
   const [examPrepDate, setExamPrepDate] = useState("");
+  const [emailSuccessOpen, setEmailSuccessOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
