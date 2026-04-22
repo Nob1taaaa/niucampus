@@ -71,8 +71,12 @@ const NotificationBell = ({ userId }: { userId: string }) => {
       )
       .subscribe();
 
+    const onOpenRequest = () => setOpen(true);
+    window.addEventListener("open-notifications", onOpenRequest);
+
     return () => {
       supabase.removeChannel(channel);
+      window.removeEventListener("open-notifications", onOpenRequest);
     };
   }, [userId, fetchNotifications]);
 
