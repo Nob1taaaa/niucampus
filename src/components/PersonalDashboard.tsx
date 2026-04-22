@@ -132,7 +132,18 @@ const PersonalDashboard = ({ user }: Props) => {
 
   const g = greeting();
 
-  const cards = [
+  const cards: Array<{
+    label: string;
+    value: number;
+    icon: typeof Bell;
+    tint: string;
+    ring: string;
+    iconColor: string;
+    path?: string;
+    action?: "open-notifications";
+    hint: string;
+    glow?: boolean;
+  }> = [
     {
       label: "Pending Claims",
       value: stats.pendingClaims,
@@ -171,7 +182,7 @@ const PersonalDashboard = ({ user }: Props) => {
       tint: "from-violet-500/25 via-indigo-500/15 to-transparent",
       ring: "ring-violet-500/20",
       iconColor: "text-violet-400",
-      path: "/lost-found",
+      action: "open-notifications" as const,
       hint: stats.unreadNotifications > 0 ? "New for you" : "You're caught up",
     },
   ];
@@ -206,7 +217,13 @@ const PersonalDashboard = ({ user }: Props) => {
             return (
               <button
                 key={c.label}
-                onClick={() => navigate(c.path)}
+                onClick={() => {
+                  if (c.action === "open-notifications") {
+                    window.dispatchEvent(new Event("open-notifications"));
+                  } else if (c.path) {
+                    navigate(c.path);
+                  }
+                }}
                 className={`group relative text-left overflow-hidden rounded-xl sm:rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-3 sm:p-4 ring-1 ${c.ring} transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.15)] active:scale-[0.98]`}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${c.tint} opacity-60 group-hover:opacity-100 transition-opacity`} />
