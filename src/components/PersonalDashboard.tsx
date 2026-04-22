@@ -60,46 +60,73 @@ const PersonalDashboard = ({ user }: Props) => {
     const load = async () => {
       const streak = computeStreak();
 
-      const [profileRes, postsRes, eventsRes, notifRes] = await Promise.all([
-        supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-        supabase.from("lost_found_posts").select("id").eq("user_id", user.id),
-        supabase
-          .from("event_attendees")
-          .select("event_id, events!inner(event_date)")
-          .eq("user_id", user.id)
-          .gte("events.event_date", new Date().toISOString()),
-        supabase
-          .from("notifications")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .eq("is_read", false),
-      ]);
+      try {
+        const [profileRes, postsRes, eventsRes, notifRes] = await Promise.all([
+          supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+          supabase.from("lost_found_posts").select("id").eq("user_id", user.id),
+          supabase
+            .from("event_attendees")
+            .select("event_id, events!inner(event_date)")
+            .eq("user_id", user.id)
+            .gte("events.event_date", new Date().toISOString()),
+          supabase
+            .from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .eq("is_read", false),
+        ]);
 
-      let pendingClaims = 0;
-      const postIds = (postsRes.data ?? []).map((p) => p.id);
-      if (postIds.length > 0) {
-        const { count } = await supabase
-          .from("lost_found_claims")
-          .select("id", { count: "exact", head: true })
-          .in("post_id", postIds)
-          .eq("status", "pending");
-        pendingClaims = count ?? 0;
+        let pendingClaims = 0;
+        const postIds = (postsRes.data ?? []).map((p) => p.id);
+        if (postIds.length > 0) {
+          const { count } = await supabase
+            .from("lost_found_claims")
+            .select("id", { count: "exact", head: true })
+            .in("post_id", postIds)
+            .eq("status", "pending");
+          pendingClaims = count ?? 0;
+        }
+
+        if (!mounted) return;
+        const fullName = profileRes.data?.full_name?.trim() || user.email?.split("@")[0] || "there";
+        setName(fullName.split(" ")[0]);
+        setStats({
+          pendingClaims,
+          upcomingEvents: eventsRes.data?.length ?? 0,
+          unreadNotifications: notifRes.count ?? 0,
+          streak,
+        });
+      } catch (err) {
+        console.error("Dashboard load failed:", err);
+        if (mounted) {
+          const fallback = user.email?.split("@")[0] || "there";
+          setName(fallback.split(" ")[0]);
+          setStats((s) => ({ ...s, streak }));
+        }
+      } finally {
+        if (mounted) setLoading(false);
       }
-
-      if (!mounted) return;
-      const fullName = profileRes.data?.full_name?.trim() || user.email?.split("@")[0] || "there";
-      setName(fullName.split(" ")[0]);
-      setStats({
-        pendingClaims,
-        upcomingEvents: eventsRes.data?.length ?? 0,
-        unreadNotifications: notifRes.count ?? 0,
-        streak,
-      });
-      setLoading(false);
     };
     load();
+
+    // Refresh when user returns to the tab
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+
+    // Live notifications updates
+    const channel = supabase
+      .channel(`dashboard-notif-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+        () => load()
+      )
+      .subscribe();
+
     return () => {
       mounted = false;
+      window.removeEventListener("focus", onFocus);
+      supabase.removeChannel(channel);
     };
   }, [user.id, user.email]);
 
@@ -144,7 +171,7 @@ const PersonalDashboard = ({ user }: Props) => {
       tint: "from-violet-500/25 via-indigo-500/15 to-transparent",
       ring: "ring-violet-500/20",
       iconColor: "text-violet-400",
-      path: "#",
+      path: "/lost-found",
       hint: stats.unreadNotifications > 0 ? "New for you" : "You're caught up",
     },
   ];
@@ -179,7 +206,7 @@ const PersonalDashboard = ({ user }: Props) => {
             return (
               <button
                 key={c.label}
-                onClick={() => c.path !== "#" && navigate(c.path)}
+                onClick={() => navigate(c.path)}
                 className={`group relative text-left overflow-hidden rounded-xl sm:rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-3 sm:p-4 ring-1 ${c.ring} transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.15)] active:scale-[0.98]`}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${c.tint} opacity-60 group-hover:opacity-100 transition-opacity`} />
