@@ -112,10 +112,12 @@ const LostFoundPage = () => {
       };
       if (type === "found" && secretQuestion.trim()) {
         insertData.secret_question = secretQuestion.trim();
-        insertData.secret_answer = secretAnswer.trim() || null;
       }
       const { data, error } = await supabase.from("lost_found_posts").insert(insertData).select().single();
       if (error) throw error;
+      if (type === "found" && secretAnswer.trim()) {
+        await saveSecretAnswer(data.id, user.id, secretAnswer.trim());
+      }
       setPosts((prev) => [data, ...prev]);
       toast({ title: "✅ Post added!", description: "Your post is now visible on the board." });
       setTitle(""); setLocation(""); setWhen(""); setDescription(""); setType(""); setSecretQuestion(""); setSecretAnswer("");

@@ -16,7 +16,22 @@ const ReunionFeed = () => {
     loadReunions();
   }, []);
 
+  const isMissingTable = (error: any) =>
+    ["42P01", "PGRST205", "42501"].includes(String(error?.code || ""));
+
   const loadReunions = async () => {
+    const viaView = await supabase
+      .from("lost_found_reunion_highlights")
+      .select("id, post_id, created_at, post_title")
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    if (!isMissingTable(viaView.error)) {
+      if (viaView.data && viaView.data.length > 0) setReunions(viaView.data);
+      return;
+    }
+
+    // Older setup: read the table directly and look up titles separately.
     const { data } = await supabase
       .from("lost_found_reunions")
       .select("*")
