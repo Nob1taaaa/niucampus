@@ -14,6 +14,7 @@ export default {
   	},
   	extend: {
   		colors: {
+  			mode: { radar: 'hsl(var(--mode-radar))', food: 'hsl(var(--mode-food))', borrow: 'hsl(var(--mode-borrow))', gig: 'hsl(var(--mode-gig))', creator: 'hsl(var(--mode-creator))', ride: 'hsl(var(--mode-ride))' },
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 import { Heart, Loader2, Lock, X } from "lucide-react";
 
 const db = supabase as any;
@@ -27,7 +28,9 @@ const SecretCrush = () => {
     const { data: prof } = ids.length ? await supabase.from("profiles").select("id, full_name").in("id", ids) : { data: [] as any[] };
     setCrushes((data || []).map((c: any) => ({ ...c, name: prof?.find((p) => p.id === c.target_id)?.full_name || "NIU student" })));
     const { data: m } = await db.rpc("my_mutual_crushes");
-    setMutual((m || []).map((r: any) => r.crush_id));
+    const mm = (m || []).map((r: any) => r.crush_id);
+    if (mm.length) { confetti({ particleCount: 120, spread: 90, colors: ["#f43f5e", "#fb7185", "#fda4af"] }); }
+    setMutual(mm);
   };
   useEffect(() => { if (userId) load(); }, [userId]);
 
@@ -71,6 +74,12 @@ const SecretCrush = () => {
         <Heart className="mx-auto h-10 w-10 text-primary" />
         <h1 className="mt-2 font-serif text-3xl font-bold">Secret Crush Vault</h1>
         <p className="mt-2 text-sm text-muted-foreground">Add up to {MAX} names. Nobody ever sees your list. If they add you too, you both see it's a match.</p>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+        {[["🔒", "Add secretly"], ["⏳", "They never know"], ["💘", "Both match = reveal"]].map(([e, t]) => (
+          <div key={t} className="rounded-2xl border border-border/50 bg-card/60 p-3"><p className="text-2xl">{e}</p><p className="mt-1 text-[0.7rem] font-semibold">{t}</p></div>
+        ))}
       </div>
 
       <section className="mt-5 rounded-3xl border border-border/50 bg-card/60 backdrop-blur-xl p-4">
