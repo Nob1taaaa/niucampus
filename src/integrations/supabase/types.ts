@@ -62,6 +62,92 @@ export type Database = {
         }
         Relationships: []
       }
+      campus_post_responses: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campus_post_responses_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "campus_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campus_post_responses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campus_posts: {
+        Row: {
+          body: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          kind: string
+          location: string | null
+          payload: Json
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind: string
+          location?: string | null
+          payload?: Json
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          location?: string | null
+          payload?: Json
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campus_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -747,6 +833,42 @@ export type Database = {
         }
         Relationships: []
       }
+      secret_crushes: {
+        Row: {
+          admirer_id: string
+          created_at: string
+          id: string
+          target_id: string
+        }
+        Insert: {
+          admirer_id: string
+          created_at?: string
+          id?: string
+          target_id: string
+        }
+        Update: {
+          admirer_id?: string
+          created_at?: string
+          id?: string
+          target_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "secret_crushes_admirer_id_fkey"
+            columns: ["admirer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "secret_crushes_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       study_group_members: {
         Row: {
           group_id: string
@@ -940,6 +1062,12 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      my_mutual_crushes: {
+        Args: never
+        Returns: {
+          crush_id: string
+        }[]
       }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
