@@ -67,10 +67,14 @@ const Index = () => {
   ];
 
   const comingSoon = [
-    { emoji: "📡", title: "Campus Radar", desc: "Food buddy & hangout pings" },
-    { emoji: "🆘", title: "Borrow SOS", desc: "Need a charger? Ask nearby" },
-    { emoji: "💸", title: "Micro-Gigs", desc: "Earn from your skills" },
-    { emoji: "🧩", title: "Daily Trivia", desc: "Play, streak, win" },
+    { emoji: "📡", title: "Campus Radar", desc: "Hangout pings", to: "/campus?tab=radar" },
+    { emoji: "🍜", title: "Food Buddy", desc: "Never eat alone", to: "/campus?tab=food" },
+    { emoji: "🆘", title: "Borrow SOS", desc: "Need a charger? Ask", to: "/campus?tab=borrow" },
+    { emoji: "💸", title: "Micro-Gigs", desc: "Earn from your skills", to: "/campus?tab=gig" },
+    { emoji: "🎬", title: "Creator Hub", desc: "Find collabs", to: "/campus?tab=creator" },
+    { emoji: "🛺", title: "Ride Share", desc: "Split autos & cabs", to: "/campus?tab=ride" },
+    { emoji: "💌", title: "Secret Crush", desc: "Only if it's mutual", to: "/crush" },
+    { emoji: "🧩", title: "Daily Trivia", desc: "Play, streak, win", to: "/trivia" },
   ];
 
   return (
@@ -155,18 +159,18 @@ const Index = () => {
         {/* Coming soon */}
         <section className="mb-5 sm:mb-10 rounded-3xl border border-border/50 bg-card/60 backdrop-blur-xl p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="font-serif text-xl sm:text-2xl font-bold">Coming soon</h2>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold">New on campus</h2>
             <span className="rounded-full bg-primary/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-primary">v2</span>
           </div>
           <div className="flex gap-2.5 overflow-x-auto pb-1 snap-x">
             {comingSoon.map((c) => {
-              const live = c.title === "Daily Trivia";
+              const live = true;
               return (
-                <button key={c.title} onClick={() => live && navigate("/trivia")} className={`min-w-[150px] snap-start text-left rounded-2xl border bg-background/60 p-3.5 ${live ? "border-primary/50 active:scale-95" : "border-border/50 cursor-default"}`}>
+                <button key={c.title} onClick={() => navigate(c.to)} className={`min-w-[150px] snap-start text-left rounded-2xl border bg-background/60 p-3.5 ${live ? "border-primary/50 active:scale-95" : "border-border/50 cursor-default"}`}>
                   <span className="text-2xl">{c.emoji}</span>
                   <p className="mt-2 text-sm font-bold">{c.title}</p>
                   <p className="text-xs text-muted-foreground">{c.desc}</p>
-                  {live && <span className="mt-2 inline-block text-[0.65rem] font-semibold text-primary">Play now →</span>}
+                  {live && <span className="mt-2 inline-block text-[0.65rem] font-semibold text-primary">Open →</span>}
                 </button>
               );
             })}
