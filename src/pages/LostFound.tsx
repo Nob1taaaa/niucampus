@@ -94,7 +94,7 @@ const LostFoundPage = () => {
 
 // The expected answer is stored where only its owner can read it.
 async function saveSecretAnswer(postId: string, userId: string, answer: string) {
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from("lost_found_post_secrets")
     .upsert({ post_id: postId, user_id: userId, secret_answer: answer });
   if (["42P01", "PGRST205", "42501"].includes(String(error?.code || ""))) {

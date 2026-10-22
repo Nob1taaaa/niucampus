@@ -20,7 +20,7 @@ const ReunionFeed = () => {
     ["42P01", "PGRST205", "42501"].includes(String(error?.code || ""));
 
   const loadReunions = async () => {
-    const viaView = await supabase
+    const viaView = await (supabase as any)
       .from("lost_found_reunion_highlights")
       .select("id, post_id, created_at, post_title")
       .order("created_at", { ascending: false })
