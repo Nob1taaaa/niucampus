@@ -34,7 +34,7 @@ const vibeScore = (a: string, b: string) => {
   return 55 + (h % 45);
 };
 
-const SecretCrush = () => {
+const CrushVault = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const [myName, setMyName] = useState("");
@@ -126,7 +126,7 @@ const SecretCrush = () => {
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-6 pb-24 sm:py-10" style={{ ["--tone" as any]: "var(--mode-borrow)" }}>
+    <div style={{ ["--tone" as any]: "var(--mode-borrow)" }}>
       {/* Hero */}
       <div className="relative overflow-hidden rounded-3xl border border-[hsl(var(--tone)/0.3)] bg-card/80 p-6 text-center backdrop-blur-xl">
         <div className="pointer-events-none absolute -top-16 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-[hsl(var(--tone)/0.25)] blur-[70px]" />
@@ -302,4 +302,4 @@ const SecretCrush = () => {
   );
 };
 
-export default SecretCrush;
+export default CrushVault;
