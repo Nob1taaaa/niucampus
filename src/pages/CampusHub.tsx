@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { toast } from "sonner";
-import { Loader2, MapPin, Clock, Plus, Search, Check, X, ArrowRight, Users, Sparkles, Shield } from "lucide-react";
+import { Loader2, MapPin, Clock, Plus, Search, Check, X, ArrowRight, Users, Sparkles, Shield, MessageCircle } from "lucide-react";
+import CampusChat from "@/components/CampusChat";
 
 const db = supabase as any;
 type Kind = "radar" | "food" | "borrow" | "gig" | "creator" | "ride";
@@ -69,6 +70,7 @@ const CampusHub = () => {
   const [open, setOpen] = useState(false);
   const [composeKind, setComposeKind] = useState<Kind>("radar");
   const [d, setD] = useState(emptyDraft());
+  const [chat, setChat] = useState<{ post: any; responderId: string; otherName: string } | null>(null);
   const set = (patch: Partial<ReturnType<typeof emptyDraft>>) => setD((x) => ({ ...x, ...patch }));
 
   useEffect(() => { supabase.auth.getUser().then(({ data }) => { setUserId(data.user?.id ?? null); setAuthReady(true); }); }, []);
@@ -89,7 +91,14 @@ const CampusHub = () => {
     load();
     const onFocus = () => load();
     window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const reload = () => { clearTimeout(t); t = setTimeout(load, 400); };
+    const ch = supabase
+      .channel("campus-hub-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "campus_posts" }, reload)
+      .on("postgres_changes", { event: "*", schema: "public", table: "campus_post_responses" }, reload)
+      .subscribe();
+    return () => { window.removeEventListener("focus", onFocus); clearTimeout(t); supabase.removeChannel(ch); };
   }, [userId, authReady]);
 
   const counts = useMemo(() => Object.fromEntries(KINDS.map((k) => [k, posts.filter((p) => p.kind === k).length])) as Record<Kind, number>, [posts]);
@@ -302,7 +311,7 @@ const CampusHub = () => {
                     <div key={r.id} className="mt-2 flex items-center justify-between">
                       <span className="text-sm">{names[r.user_id] || "NIU student"}</span>
                       {accepted.includes(r.user_id)
-                        ? <span className="text-xs font-bold text-primary flex items-center gap-1"><Check className="h-3.5 w-3.5" />Accepted</span>
+                        ? <Button size="sm" className="h-7 rounded-xl text-xs" onClick={() => setChat({ post: p, responderId: r.user_id, otherName: names[r.user_id] || "NIU student" })}><MessageCircle className="mr-1 h-3.5 w-3.5" />Chat</Button>
                         : <Button size="sm" variant="outline" className="h-7 rounded-xl text-xs" onClick={() => accept(p, r.user_id)}>Accept</Button>}
                     </div>
                   ))}
@@ -314,7 +323,10 @@ const CampusHub = () => {
                     {resp.length > 0 && <span className="pl-3 self-center text-[0.7rem] text-muted-foreground">{resp.length} in</span>}
                   </div>
                   {amAccepted ? (
-                    <span className="rounded-xl bg-primary/10 text-primary px-3 py-1.5 text-xs font-bold">✅ You're confirmed{p.location ? ` · ${p.location}` : ""}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="rounded-xl bg-primary/10 text-primary px-3 py-1.5 text-xs font-bold">✅ Confirmed</span>
+                      <Button size="sm" className="h-7 rounded-xl text-xs" onClick={() => setChat({ post: p, responderId: userId!, otherName: names[p.user_id] || "NIU student" })}><MessageCircle className="mr-1 h-3.5 w-3.5" />Chat</Button>
+                    </div>
                   ) : myResp ? (
                     <Button size="sm" variant="secondary" className="rounded-xl" onClick={() => withdraw(p.id)}><X className="mr-1 h-3.5 w-3.5" />Requested</Button>
                   ) : p.status === "claimed" ? (
@@ -394,6 +406,18 @@ const CampusHub = () => {
           </div>
         </DrawerContent>
       </Drawer>
+      {chat && userId && (
+        <CampusChat
+          open={!!chat}
+          onOpenChange={(v) => { if (!v) setChat(null); }}
+          postId={chat.post.id}
+          postTitle={chat.post.title}
+          posterId={chat.post.user_id}
+          responderId={chat.responderId}
+          meId={userId}
+          otherName={chat.otherName}
+        />
+      )}
     </div>
   );
 };
