@@ -21,6 +21,8 @@ const StudyPlannerPage = lazy(() => import("./pages/StudyPlanner"));
 const StudyMaterialsPage = lazy(() => import("./pages/StudyMaterials"));
 const UnsubscribePage = lazy(() => import("./pages/Unsubscribe"));
 const TriviaPage = lazy(() => import("./pages/Trivia"));
+const CampusHubPage = lazy(() => import("./pages/CampusHub"));
+const SecretCrushPage = lazy(() => import("./pages/SecretCrush"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,6 +62,8 @@ const App = () => (
             <Route path="/planner" element={<Layout><StudyPlannerPage /></Layout>} />
             <Route path="/materials" element={<Layout><StudyMaterialsPage /></Layout>} />
             <Route path="/trivia" element={<Layout><TriviaPage /></Layout>} />
+            <Route path="/campus" element={<Layout><CampusHubPage /></Layout>} />
+            <Route path="/crush" element={<Layout><SecretCrushPage /></Layout>} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
