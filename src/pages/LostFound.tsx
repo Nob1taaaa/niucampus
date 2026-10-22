@@ -92,6 +92,17 @@ const LostFoundPage = () => {
     if (data) setUserChatPostIds(data.map((c) => c.post_id));
   };
 
+// The expected answer is stored where only its owner can read it.
+async function saveSecretAnswer(postId: string, userId: string, answer: string) {
+  const { error } = await (supabase as any)
+    .from("lost_found_post_secrets")
+    .upsert({ post_id: postId, user_id: userId, secret_answer: answer });
+  if (["42P01", "PGRST205", "42501"].includes(String(error?.code || ""))) {
+    // Older setup: the answer still lives on the post itself.
+    await supabase.from("lost_found_posts").update({ secret_answer: answer }).eq("id", postId);
+  }
+}
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (submitting) return;
@@ -112,10 +123,12 @@ const LostFoundPage = () => {
       };
       if (type === "found" && secretQuestion.trim()) {
         insertData.secret_question = secretQuestion.trim();
-        insertData.secret_answer = secretAnswer.trim() || null;
       }
       const { data, error } = await supabase.from("lost_found_posts").insert(insertData).select().single();
       if (error) throw error;
+      if (type === "found" && secretAnswer.trim()) {
+        await saveSecretAnswer(data.id, user.id, secretAnswer.trim());
+      }
       setPosts((prev) => [data, ...prev]);
       toast({ title: "✅ Post added!", description: "Your post is now visible on the board." });
       setTitle(""); setLocation(""); setWhen(""); setDescription(""); setType(""); setSecretQuestion(""); setSecretAnswer("");
