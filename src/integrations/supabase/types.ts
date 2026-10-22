@@ -62,6 +62,94 @@ export type Database = {
         }
         Relationships: []
       }
+      campus_hub_chats: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          poster_id: string
+          responder_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          poster_id: string
+          responder_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          poster_id?: string
+          responder_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campus_hub_chats_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "campus_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campus_hub_chats_poster_id_fkey"
+            columns: ["poster_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campus_hub_chats_responder_id_fkey"
+            columns: ["responder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campus_hub_messages: {
+        Row: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          chat_id: string
+          content: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          chat_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campus_hub_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "campus_hub_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campus_hub_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campus_post_responses: {
         Row: {
           created_at: string
