@@ -610,6 +610,27 @@ export type Database = {
           },
         ]
       }
+      lost_found_post_secrets: {
+        Row: {
+          created_at: string
+          post_id: string
+          secret_answer: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          secret_answer?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          secret_answer?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       lost_found_posts: {
         Row: {
           approximate_time: string | null
@@ -618,7 +639,6 @@ export type Database = {
           id: string
           is_resolved: boolean
           location: string
-          secret_answer: string | null
           secret_question: string | null
           title: string
           type: string
@@ -632,7 +652,6 @@ export type Database = {
           id?: string
           is_resolved?: boolean
           location: string
-          secret_answer?: string | null
           secret_question?: string | null
           title: string
           type: string
@@ -646,7 +665,6 @@ export type Database = {
           id?: string
           is_resolved?: boolean
           location?: string
-          secret_answer?: string | null
           secret_question?: string | null
           title?: string
           type?: string
@@ -1125,7 +1143,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      lost_found_reunion_highlights: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          post_id: string | null
+          post_title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lost_found_reunions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "lost_found_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       cleanup_old_ai_usage: { Args: never; Returns: undefined }
