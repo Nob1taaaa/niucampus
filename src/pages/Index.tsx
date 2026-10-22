@@ -159,13 +159,17 @@ const Index = () => {
             <span className="rounded-full bg-primary/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-primary">v2</span>
           </div>
           <div className="flex gap-2.5 overflow-x-auto pb-1 snap-x">
-            {comingSoon.map((c) => (
-              <div key={c.title} className="min-w-[150px] snap-start rounded-2xl border border-border/50 bg-background/60 p-3.5">
-                <span className="text-2xl">{c.emoji}</span>
-                <p className="mt-2 text-sm font-bold">{c.title}</p>
-                <p className="text-xs text-muted-foreground">{c.desc}</p>
-              </div>
-            ))}
+            {comingSoon.map((c) => {
+              const live = c.title === "Daily Trivia";
+              return (
+                <button key={c.title} onClick={() => live && navigate("/trivia")} className={`min-w-[150px] snap-start text-left rounded-2xl border bg-background/60 p-3.5 ${live ? "border-primary/50 active:scale-95" : "border-border/50 cursor-default"}`}>
+                  <span className="text-2xl">{c.emoji}</span>
+                  <p className="mt-2 text-sm font-bold">{c.title}</p>
+                  <p className="text-xs text-muted-foreground">{c.desc}</p>
+                  {live && <span className="mt-2 inline-block text-[0.65rem] font-semibold text-primary">Play now →</span>}
+                </button>
+              );
+            })}
           </div>
         </section>
 
