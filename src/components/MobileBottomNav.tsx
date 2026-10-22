@@ -14,11 +14,9 @@ const prefetchMap: Record<string, () => void> = {
 const tabs = [
   { path: "/", label: "Home", icon: Home },
   { path: "/events", label: "Events", icon: CalendarDays },
+  { path: "/marketplace", label: "Bazaar", icon: ShoppingBag },
   { path: "/lost-found", label: "Lost", icon: MapPin },
-  { path: "/marketplace", label: "Market", icon: ShoppingBag },
-  { path: "/qa", label: "Q&A", icon: HelpCircle },
-  { path: "/planner", label: "Planner", icon: ClipboardList },
-  { path: "/materials", label: "Notes", icon: FileText },
+  { path: "/materials", label: "Study", icon: FileText },
 ];
 
 const MobileBottomNav = () => {
