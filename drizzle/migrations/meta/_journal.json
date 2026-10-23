@@ -15,6 +15,13 @@
       "when": 1792756597707,
       "tag": "0001_restrict_public_reads_to_signed_in",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792756704292,
+      "tag": "0002_restrict_responses_matches_to_signed_in",
+      "breakpoints": true
     }
   ]
 }
