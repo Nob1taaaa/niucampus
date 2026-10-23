@@ -8,6 +8,13 @@
       "when": 1792692552446,
       "tag": "0000_close_open_access_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792756597707,
+      "tag": "0001_restrict_public_reads_to_signed_in",
+      "breakpoints": true
     }
   ]
 }
