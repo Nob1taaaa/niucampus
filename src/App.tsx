@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
 import BackToHome from "./components/BackToHome";
+import RouteMeta from "./components/RouteMeta";
 
 // Lazy-load pages for faster initial load
 const Index = lazy(() => import("./pages/Index"));
@@ -50,6 +51,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <BackToHome />
+        <RouteMeta />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/auth" element={<Auth />} />
