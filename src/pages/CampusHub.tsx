@@ -40,6 +40,189 @@ const MODE_INFO: Record<Kind, { title: string; accent: string; steps: [string, s
              steps: [["🗺️", "Set from, to and time"], ["💺", "Choose seats & fare"], ["🛺", "Pay just your share"]] },
 };
 
+// ---------- Mode-specific helpers ----------
+const URG = ["Right now", "Within 1 hour", "Today"];
+const urgRank = (p: any) => { const i = URG.indexOf(p.payload?.urgency); return i < 0 ? 9 : i; };
+const perHead = (p: any) => p.payload?.fare ? Number(p.payload.fare) / ((p.payload.seats || 1) + 1) : 9e9;
+const subKey = (p: any): string => {
+  const pl = p.payload || {};
+  switch (p.kind) {
+    case "radar": case "food": case "borrow": return p.location || "";
+    case "ride": return pl.to || "";
+    case "gig": return pl.mode === "hire" ? "hire" : "offer";
+    case "creator": return pl.platform || "";
+    default: return "";
+  }
+};
+
+const Seg = ({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) => (
+  <button onClick={onClick} className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${on ? "bg-foreground text-background" : "bg-background/70 border border-border/50"}`}>{children}</button>
+);
+const Panel = ({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) => (
+  <div className="rounded-3xl border border-border/50 bg-card/70 p-4 backdrop-blur-xl">
+    <div className="mb-3 flex items-baseline justify-between gap-2"><p className="font-serif text-lg font-bold">{title}</p>{hint && <p className="text-[0.7rem] text-muted-foreground">{hint}</p>}</div>
+    {children}
+  </div>
+);
+
+type Quick = (patch: Partial<ReturnType<typeof emptyDraft>>) => void;
+const ModeTools = ({ k, posts, sub, setSub, sort, setSort, quick }: { k: Kind; posts: any[]; sub: string; setSub: (s: string) => void; sort: string; setSort: (s: string) => void; quick: Quick }) => {
+  const m = MODES[k];
+  const tally = (keys: string[]) => keys.map((x) => [x, posts.filter((p) => subKey(p) === x).length] as const);
+  const toggle = (x: string) => setSub(sub === x ? "" : x);
+  const [fare, setFare] = useState(""); const [ppl, setPpl] = useState(3);
+
+  if (k === "radar") return (
+    <section className="mt-4 grid gap-3 md:grid-cols-2">
+      <Panel title="📍 Spot board" hint="Tap a spot to see who's there">
+        <div className="grid grid-cols-2 gap-2">
+          {tally(SPOTS).map(([s, n]) => (
+            <button key={s} onClick={() => toggle(s)} className={`flex items-center justify-between rounded-2xl border px-3 py-2.5 text-left text-xs font-semibold transition ${sub === s ? `${m.bg} text-primary-foreground border-transparent` : `${m.soft} ${m.border}`}`}>
+              <span className="truncate">{s}</span>
+              <span className="flex items-center gap-1">{n > 0 && <span className={`h-2 w-2 animate-pulse rounded-full ${sub === s ? "bg-background" : m.bg}`} />}{n}</span>
+            </button>
+          ))}
+        </div>
+      </Panel>
+      <Panel title="⚡ One-tap hangout" hint="Goes live for 2 hours">
+        <div className="grid grid-cols-2 gap-2">
+          {PICKS.radar.map((x) => <button key={x} onClick={() => quick({ pick: x, when: "Right now" })} className="rounded-2xl border border-border/50 bg-background/70 px-3 py-2.5 text-left text-sm font-medium active:scale-95">{x}</button>)}
+        </div>
+      </Panel>
+    </section>
+  );
+
+  if (k === "food") {
+    const meals: [string, string, string][] = [["🌅", "Breakfast", "In 30 mins"], ["🍛", "Lunch", "Right now"], ["🍟", "Snacks", "In 15 mins"], ["🌙", "Dinner", "In 1 hour"]];
+    return (
+      <section className="mt-4 grid gap-3 md:grid-cols-[1.2fr_1fr]">
+        <Panel title="🪑 Open tables by canteen" hint="Filled dots = people already seated">
+          <div className="space-y-2">
+            {SPOTS.slice(0, 5).map((s) => {
+              const here = posts.filter((p) => p.location === s);
+              const seats = here.reduce((a, p) => a + (p.payload?.size || 1), 0);
+              const taken = here.reduce((a, p) => a + (p.payload?.accepted?.length || 0), 0);
+              return (
+                <button key={s} onClick={() => toggle(s)} className={`flex w-full items-center justify-between rounded-2xl border px-3 py-2 text-left transition ${sub === s ? m.border + " " + m.soft : "border-border/40 bg-background/60"}`}>
+                  <span className="text-sm font-semibold">{s}</span>
+                  <span className="flex gap-1">{seats === 0 ? <span className="text-[0.7rem] text-muted-foreground">no tables</span> : Array.from({ length: Math.min(seats, 8) }).map((_, i) => <span key={i} className={`h-3 w-3 rounded-full ${i < taken ? m.bg : "border-2 " + m.border}`} />)}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Panel>
+        <Panel title="🍽️ I'm hungry for…" hint="Start a table in one tap">
+          <div className="grid grid-cols-2 gap-2">
+            {meals.map(([e, l, w]) => (
+              <button key={l} onClick={() => quick({ spot: "Main Canteen", when: w, title: `${l} at Main Canteen` })} className={`rounded-2xl ${m.soft} border ${m.border} p-3 text-left active:scale-95`}>
+                <span className="text-2xl">{e}</span><p className="mt-1 text-sm font-bold">{l}</p><p className="text-[0.65rem] text-muted-foreground">{w}</p>
+              </button>
+            ))}
+          </div>
+        </Panel>
+      </section>
+    );
+  }
+
+  if (k === "borrow") return (
+    <section className="mt-4 grid gap-3 md:grid-cols-[1fr_1.2fr]">
+      <Panel title="🚨 Urgency meter">
+        <div className="grid grid-cols-3 gap-2 text-center">
+          {URG.map((u, i) => {
+            const n = posts.filter((p) => p.payload?.urgency === u).length;
+            return <div key={u} className={`rounded-2xl p-3 ${i === 0 ? "bg-destructive/10 text-destructive" : "bg-background/70 border border-border/50"}`}><p className="font-serif text-2xl font-bold">{n}</p><p className="text-[0.65rem] font-semibold">{u}</p></div>;
+          })}
+        </div>
+        <div className="mt-3 flex gap-2"><Seg on={sort === "new"} onClick={() => setSort("new")}>Newest</Seg><Seg on={sort === "urgent"} onClick={() => setSort("urgent")}>🔥 Most urgent first</Seg></div>
+      </Panel>
+      <Panel title="🆘 Need it fast?" hint="Tap the item — we'll post the SOS">
+        <div className="grid grid-cols-4 gap-2">
+          {PICKS.borrow.map((x) => { const [e, ...r] = x.split(" "); return (
+            <button key={x} onClick={() => quick({ pick: x, urgency: "Right now" })} className="flex flex-col items-center gap-1 rounded-2xl border border-border/50 bg-background/70 p-2 active:scale-95"><span className="text-2xl">{e}</span><span className="text-[0.62rem] font-semibold leading-tight">{r.join(" ")}</span></button>
+          ); })}
+        </div>
+      </Panel>
+    </section>
+  );
+
+  if (k === "gig") {
+    const offers = posts.filter((p) => p.payload?.mode !== "hire"); const hires = posts.length - offers.length;
+    const priced = offers.map((p) => Number(p.payload?.price)).filter((x) => x > 0);
+    const avg = priced.length ? Math.round(priced.reduce((a, b) => a + b, 0) / priced.length) : null;
+    return (
+      <section className="mt-4 grid gap-3 md:grid-cols-2">
+        <Panel title="💼 Gig market">
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-2xl bg-background/70 border border-border/50 p-3"><p className="font-serif text-2xl font-bold">{offers.length}</p><p className="text-[0.65rem]">offering</p></div>
+            <div className="rounded-2xl bg-background/70 border border-border/50 p-3"><p className="font-serif text-2xl font-bold">{hires}</p><p className="text-[0.65rem]">hiring</p></div>
+            <div className={`rounded-2xl ${m.soft} p-3`}><p className={`font-serif text-2xl font-bold ${m.text}`}>{avg ? `₹${avg}` : "—"}</p><p className="text-[0.65rem]">avg price</p></div>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Seg on={sub === ""} onClick={() => setSub("")}>All</Seg><Seg on={sub === "offer"} onClick={() => setSub("offer")}>🙋 Offering</Seg><Seg on={sub === "hire"} onClick={() => setSub("hire")}>🔎 Hiring</Seg>
+            <Seg on={sort === "price"} onClick={() => setSort(sort === "price" ? "new" : "price")}>₹ Cheapest first</Seg>
+          </div>
+        </Panel>
+        <Panel title="💸 What can you earn from?" hint="Tap a skill to offer it">
+          <div className="grid grid-cols-2 gap-2">
+            {PICKS.gigCat.map((x) => <button key={x} onClick={() => quick({ pick: x, mode: "offer" })} className="rounded-2xl border border-border/50 bg-background/70 px-3 py-2 text-left text-sm font-medium active:scale-95">{x}</button>)}
+          </div>
+        </Panel>
+      </section>
+    );
+  }
+
+  if (k === "creator") {
+    const plats = ["Instagram", "YouTube", "Snapchat", "LinkedIn"];
+    return (
+      <section className="mt-4 grid gap-3 md:grid-cols-2">
+        <Panel title="📱 Browse by platform">
+          <div className="grid grid-cols-2 gap-2">
+            {tally(plats).map(([pf, n]) => (
+              <button key={pf} onClick={() => toggle(pf)} className={`rounded-2xl border p-3 text-left transition ${sub === pf ? `${m.bg} text-primary-foreground border-transparent` : `${m.soft} ${m.border}`}`}>
+                <p className="text-sm font-bold">{pf}</p><p className="text-[0.65rem] opacity-80">{n} looking</p>
+              </button>
+            ))}
+          </div>
+        </Panel>
+        <Panel title="🎬 I need a…" hint="Post the role in one tap">
+          <div className="flex flex-wrap gap-2">
+            {PICKS.creatorNeed.map((x) => <button key={x} onClick={() => quick({ pick: x })} className="rounded-full border border-border/50 bg-background/70 px-3 py-1.5 text-xs font-semibold active:scale-95">{x}</button>)}
+          </div>
+          <p className="mt-3 text-[0.7rem] text-muted-foreground">💡 Paid fest coverage pays ₹2,000–₹8,000 — team up to pitch clubs together.</p>
+        </Panel>
+      </section>
+    );
+  }
+
+  // ride
+  const dests = PLACES.filter((x) => x !== "NIU Campus");
+  const share = fare && ppl > 0 ? Math.ceil(Number(fare) / ppl) : null;
+  return (
+    <section className="mt-4 grid gap-3 md:grid-cols-[1.3fr_1fr]">
+      <Panel title="🗺️ Route board" hint="Where people are heading">
+        <div className="space-y-1.5">
+          {tally(dests).map(([dst, n]) => (
+            <button key={dst} onClick={() => toggle(dst)} className={`flex w-full items-center gap-2 rounded-2xl border px-3 py-2 text-left text-sm transition ${sub === dst ? `${m.soft} ${m.border}` : "border-border/40 bg-background/60"}`}>
+              <span className="text-muted-foreground">NIU</span><span className={`h-px flex-1 border-t-2 border-dashed ${m.border}`} /><span className="font-semibold">{dst}</span>
+              <span className={`ml-1 rounded-full px-2 py-0.5 text-[0.65rem] font-bold ${n ? `${m.bg} text-primary-foreground` : "bg-muted/50 text-muted-foreground"}`}>{n}</span>
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 flex gap-2"><Seg on={sort === "new"} onClick={() => setSort("new")}>Newest</Seg><Seg on={sort === "cheap"} onClick={() => setSort("cheap")}>₹ Cheapest per head</Seg></div>
+      </Panel>
+      <Panel title="🧮 Fare splitter">
+        <Input inputMode="numeric" placeholder="Total fare ₹" value={fare} onChange={(e) => setFare(e.target.value.replace(/\D/g, ""))} className="rounded-2xl" />
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">People sharing</span>
+          <div className="flex items-center gap-2"><Seg on={false} onClick={() => setPpl(Math.max(1, ppl - 1))}>−</Seg><span className="w-5 text-center font-bold">{ppl}</span><Seg on={false} onClick={() => setPpl(Math.min(6, ppl + 1))}>+</Seg></div>
+        </div>
+        <div className={`mt-3 rounded-2xl ${m.soft} p-4 text-center`}><p className={`font-serif text-3xl font-bold ${m.text}`}>{share ? `₹${share}` : "₹—"}</p><p className="text-[0.7rem] text-muted-foreground">each pays</p></div>
+        <Button className={`mt-3 w-full rounded-2xl ${m.bg} text-primary-foreground hover:opacity-90`} onClick={() => quick({ fare, seats: Math.max(1, ppl - 1) })}>Post this ride</Button>
+      </Panel>
+    </section>
+  );
+};
+
 const ModeHero = ({ k, count, onPost, onBack }: { k: Kind; count: number; onPost: () => void; onBack: () => void }) => {
   const m = MODES[k]; const info = MODE_INFO[k];
   return (
@@ -117,6 +300,9 @@ const CampusHub = () => {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [q, setQ] = useState("");
+  const [sub, setSub] = useState<string>(""); // mode-specific filter (spot, route, platform…)
+  const [sort, setSort] = useState<string>("new");
+  useEffect(() => { setSub(""); setSort("new"); }, [tab]);
   const [open, setOpen] = useState(false);
   const [composeKind, setComposeKind] = useState<Kind>("radar");
   const [d, setD] = useState(emptyDraft());
@@ -158,12 +344,16 @@ const CampusHub = () => {
     let list = posts;
     if (tab === "mine") list = posts.filter((p) => p.user_id === userId || responses.some((r) => r.post_id === p.id && r.user_id === userId));
     else if (tab !== "all") list = posts.filter((p) => p.kind === tab);
+    if (sub && isKind(tab)) list = list.filter((p) => subKey(p) === sub);
+    if (tab === "borrow" && sort === "urgent") list = [...list].sort((a, b) => urgRank(a) - urgRank(b));
+    if (tab === "gig" && sort === "price") list = [...list].sort((a, b) => (Number(a.payload?.price) || 9e9) - (Number(b.payload?.price) || 9e9));
+    if (tab === "ride" && sort === "cheap") list = [...list].sort((a, b) => perHead(a) - perHead(b));
     const s = q.trim().toLowerCase();
     if (s) list = list.filter((p) => `${p.title} ${p.body || ""} ${p.location || ""}`.toLowerCase().includes(s));
     return list;
-  }, [posts, responses, tab, q, userId]);
+  }, [posts, responses, tab, q, userId, sub, sort]);
 
-  const openCompose = (k: Kind) => { setComposeKind(k); setD(emptyDraft()); setOpen(true); };
+  const openCompose = (k: Kind, patch: Partial<ReturnType<typeof emptyDraft>> = {}) => { setComposeKind(k); setD({ ...emptyDraft(), ...patch }); setOpen(true); };
 
   const build = () => {
     const k = composeKind;
@@ -272,6 +462,11 @@ const CampusHub = () => {
         })}
       </section>
       </>)}
+
+      {isKind(tab) && (
+        <ModeTools k={tab} posts={posts.filter((p) => p.kind === tab)} sub={sub} setSub={setSub} sort={sort} setSort={setSort}
+          quick={(patch) => openCompose(tab, patch)} />
+      )}
 
       {/* Filters */}
       <section className="sticky top-14 z-20 mt-6 -mx-4 px-4 py-2 bg-background/80 backdrop-blur-xl">
