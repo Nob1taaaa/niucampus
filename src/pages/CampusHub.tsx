@@ -182,7 +182,7 @@ const CampusHub = () => {
   const Mode = MODES[composeKind];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-5 sm:py-10 pb-28">
+    <div className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
       {/* Hero */}
       <section className="relative overflow-hidden rounded-[2rem] border border-border/50 bg-card/70 backdrop-blur-xl p-6 sm:p-8">
         <div className="pointer-events-none absolute -top-20 -right-10 h-56 w-56 rounded-full bg-mode-food/20 blur-3xl" />

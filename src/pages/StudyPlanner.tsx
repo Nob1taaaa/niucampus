@@ -153,7 +153,7 @@ const StudyPlannerPage = () => {
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-3 pb-20 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+    <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
       <PageHeader icon="🎯" title="Study & Placement Planner" subtitle="Answer a few questions and let the AI mentor design a realistic weekly plan for your semester and placements.">
         <Badge variant="outline" className="border-primary/20 bg-primary/5 text-[0.7rem] text-primary">
           <Sparkles className="mr-1 h-3 w-3" /> AI powered

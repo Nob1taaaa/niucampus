@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 const EventsSkeleton = () => (
-  <main className="mx-auto max-w-5xl px-4 pb-16 pt-6 md:px-6 md:pt-8">
+  <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
     {/* Header skeleton */}
     <div className="mb-6">
       <div className="flex items-center gap-3 mb-2">

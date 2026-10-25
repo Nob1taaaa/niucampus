@@ -272,7 +272,7 @@ async function saveSecretAnswer(postId: string, userId: string, answer: string) 
   if (loading) return <LostFoundSkeleton />;
 
   return (
-    <main className="mx-auto max-w-6xl px-3 pb-16 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+    <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
       <PageHeader icon="📍" title="Lost & Found" subtitle="A central board to reconnect people with their lost items across campus.">
         <div className="relative flex items-center rounded-full bg-muted/60 border border-primary/12 p-0.5 text-xs">
           <div

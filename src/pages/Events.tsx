@@ -149,7 +149,7 @@ const EventsPage = () => {
   if (loading) return <EventsSkeleton />;
 
   return (
-    <main className="mx-auto max-w-5xl px-4 pb-16 pt-6 md:px-6 md:pt-8">
+    <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
       <PageHeader icon="📅" title="Campus Events" subtitle="Workshops, fests, club meets, and guest lectures across campus.">
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="border-primary/20 bg-primary/5 text-xs text-foreground">

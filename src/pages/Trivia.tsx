@@ -60,7 +60,7 @@ const Trivia = () => {
   const q = questions[idx];
 
   return (
-    <main className="mx-auto max-w-xl px-3 pb-24 pt-6 sm:px-4">
+    <main className="mx-auto max-w-2xl px-3 pb-24 pt-4 sm:px-4 md:pt-8">
       <header className="mb-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">Daily Trivia</p>
         <h1 className="font-serif text-3xl sm:text-4xl font-extrabold">5 questions. Every day.</h1>
