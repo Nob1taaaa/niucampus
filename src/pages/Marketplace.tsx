@@ -169,7 +169,7 @@ const MarketplacePage = () => {
 
   if (activeChatListingId && tab === "chat") {
     return (
-      <main className="mx-auto max-w-6xl px-3 pb-16 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+      <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
         <div className="mb-3">
           <Button variant="ghost" size="sm" className="rounded-xl text-xs gap-1.5" onClick={() => { setActiveChatListingId(null); setTab("browse"); }}>
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Market
@@ -185,7 +185,7 @@ const MarketplacePage = () => {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-3 pb-16 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+    <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
       <PageHeader icon="🏪" title="Campus Market" subtitle="Buy, sell, or give away items within NIU campus. Safe, quick, student-only.">
         <Button size="sm" className="h-8 rounded-full text-xs px-4" onClick={() => setIsPostOpen(true)}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Sell Item

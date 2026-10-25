@@ -237,7 +237,7 @@ const StudyMaterialsPage = () => {
   if (loading) return <StudyMaterialsSkeleton />;
 
   return (
-    <main className="mx-auto max-w-6xl px-3 pb-20 pt-5 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+    <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
       <PageHeader icon="📚" title="Study Materials" subtitle="Curated resources, NIU library links, and student-shared notes — everything in one place.">
         <Button size="sm" className="h-8 rounded-full text-xs px-4" onClick={() => setIsUploadOpen(true)}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Share Material

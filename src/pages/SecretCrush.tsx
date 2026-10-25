@@ -66,7 +66,7 @@ const SecretCrush = () => {
   const needsProfile = !me && (tab === "discover" || tab === "matches");
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-5 pb-28 sm:py-8" style={{ ["--tone" as any]: "var(--mode-borrow)" }}>
+    <div className="mx-auto max-w-2xl px-3 pb-24 pt-4 sm:px-4 md:pt-8" style={{ ["--tone" as any]: "var(--mode-borrow)" }}>
       <header className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="font-serif text-2xl font-extrabold sm:text-3xl">Crush <span className="text-[hsl(var(--tone))]">@ NIU</span></h1>

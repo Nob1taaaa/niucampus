@@ -142,7 +142,7 @@ const QAPage = () => {
   ];
 
   return (
-    <main className="mx-auto max-w-3xl px-2 pb-20 pt-4 sm:px-4 sm:pt-6 md:px-6 md:pt-8">
+    <main className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
       <PageHeader
         icon="❓"
         title="Anonymous Q&A"
