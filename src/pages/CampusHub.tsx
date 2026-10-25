@@ -22,6 +22,56 @@ const MODES: Record<Kind, { emoji: string; label: string; tag: string; cta: stri
   ride:    { emoji: "🛺", label: "Ride Share", tag: "Split autos & cabs",    cta: "Book seat",    hours: 12,   text: "text-mode-ride",    bg: "bg-mode-ride",    soft: "bg-mode-ride/10",    border: "border-mode-ride/40",    ring: "ring-mode-ride" },
 };
 const KINDS = Object.keys(MODES) as Kind[];
+const isKind = (t: string): t is Kind => (KINDS as string[]).includes(t);
+
+// Each mode gets its own identity: headline, flow, and safety note
+const MODE_INFO: Record<Kind, { title: string; accent: string; steps: [string, string][]; tip: string; stat: string }> = {
+  radar:   { title: "Who's free", accent: "right now?", stat: "pings nearby", tip: "Meet in public spots like the canteen, library or main lawn.",
+             steps: [["📍", "Drop a ping with your spot"], ["👋", "Others tap “I'm in”"], ["☕", "Meet up within 2 hours"]] },
+  food:    { title: "Never eat", accent: "alone again.", stat: "open tables", tip: "Pick a canteen or café on campus — split the bill fairly.",
+             steps: [["🍽️", "Pick a spot & time"], ["🪑", "Set how many seats"], ["😋", "Share a table, make a friend"]] },
+  borrow:  { title: "Need it", accent: "in 15 minutes?", stat: "open requests", tip: "Return items on time — your reputation travels fast.",
+             steps: [["🆘", "Say what you need"], ["⚡", "Set urgency & reward"], ["🤝", "Someone nearby lends it"]] },
+  gig:     { title: "Turn skills", accent: "into ₹ money.", stat: "gigs posted", tip: "Agree price and scope in chat before starting any work.",
+             steps: [["💼", "Offer or hire a skill"], ["💬", "Chat & agree a price"], ["💸", "Deliver and get paid"]] },
+  creator: { title: "Find your", accent: "collab partner.", stat: "creators looking", tip: "Credit each other on every post you make together.",
+             steps: [["🎬", "Post the role you need"], ["📱", "Share platform & handle"], ["🚀", "Shoot, post, grow together"]] },
+  ride:    { title: "Split the", accent: "auto & cab fare.", stat: "rides leaving", tip: "Share ride details with a friend before you leave.",
+             steps: [["🗺️", "Set from, to and time"], ["💺", "Choose seats & fare"], ["🛺", "Pay just your share"]] },
+};
+
+const ModeHero = ({ k, count, onPost, onBack }: { k: Kind; count: number; onPost: () => void; onBack: () => void }) => {
+  const m = MODES[k]; const info = MODE_INFO[k];
+  return (
+    <section className={`relative overflow-hidden rounded-[2rem] border ${m.border} ${m.soft} p-5 sm:p-8`}>
+      <div className={`pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full ${m.bg} opacity-20 blur-3xl`} />
+      <span className="pointer-events-none absolute -right-4 -bottom-8 text-[9rem] leading-none opacity-15 select-none">{m.emoji}</span>
+      <div className="relative">
+        <button onClick={onBack} className="text-xs font-semibold text-muted-foreground hover:text-foreground">← All live modes</button>
+        <div className="mt-3 flex items-center gap-3">
+          <span className={`grid h-14 w-14 place-items-center rounded-2xl ${m.bg} text-3xl shadow-lg`}>{m.emoji}</span>
+          <div>
+            <p className={`text-xs font-bold uppercase tracking-widest ${m.text}`}>{m.label}</p>
+            <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{count}</span> {info.stat}</p>
+          </div>
+        </div>
+        <h1 className="mt-4 font-serif text-3xl sm:text-5xl font-bold leading-tight">{info.title}<br /><span className={`italic ${m.text}`}>{info.accent}</span></h1>
+        <ol className="mt-5 grid gap-2 sm:grid-cols-3">
+          {info.steps.map(([e, s], i) => (
+            <li key={s} className="flex items-center gap-3 rounded-2xl border border-border/50 bg-background/70 p-3 backdrop-blur">
+              <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full ${m.bg} text-xs font-bold text-primary-foreground`}>{i + 1}</span>
+              <span className="text-sm"><span className="mr-1">{e}</span>{s}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <Button onClick={onPost} className={`h-11 rounded-2xl px-6 font-semibold ${m.bg} text-primary-foreground hover:opacity-90`}><Plus className="mr-1 h-4 w-4" />Post in {m.label}</Button>
+          <p className="text-xs text-muted-foreground">🛡️ {info.tip}</p>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const SPOTS = ["Main Canteen", "Nescafe", "Amul Parlour", "Hostel Mess", "Maggi Point", "Library", "Main Ground"];
 const PLACES = ["NIU Campus", "Pari Chowk", "KP-II Metro", "Alpha 1", "Boys Hostel", "Girls Hostel", "Delhi", "Noida Sec 18"];
@@ -183,7 +233,9 @@ const CampusHub = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-3 pb-24 pt-4 sm:px-4 md:px-6 md:pt-8">
-      {/* Hero */}
+      {isKind(tab) ? (
+        <ModeHero k={tab} count={counts[tab]} onPost={() => openCompose(tab)} onBack={() => setParams({ tab: "all" })} />
+      ) : (<>
       <section className="relative overflow-hidden rounded-[2rem] border border-border/50 bg-card/70 backdrop-blur-xl p-6 sm:p-8">
         <div className="pointer-events-none absolute -top-20 -right-10 h-56 w-56 rounded-full bg-mode-food/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 left-10 h-56 w-56 rounded-full bg-mode-radar/20 blur-3xl" />
@@ -202,24 +254,24 @@ const CampusHub = () => {
         </div>
       </section>
 
-      {/* Mode bento */}
       <section className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {KINDS.map((k, i) => {
+        {KINDS.map((k) => {
           const m = MODES[k];
           return (
-            <button key={k} onClick={() => openCompose(k)}
-              className={`group relative overflow-hidden text-left rounded-3xl border ${m.border} ${m.soft} p-4 sm:p-5 transition hover:-translate-y-0.5 active:scale-[0.98] ${i === 0 ? "sm:row-span-1" : ""}`}>
+            <button key={k} onClick={() => setParams({ tab: k })}
+              className={`group relative overflow-hidden text-left rounded-3xl border ${m.border} ${m.soft} p-4 sm:p-5 transition hover:-translate-y-0.5 active:scale-[0.98]`}>
               <div className="flex items-start justify-between">
                 <span className="text-3xl sm:text-4xl transition group-hover:scale-110">{m.emoji}</span>
                 {counts[k] > 0 && <span className={`rounded-full ${m.bg} text-primary-foreground px-2 py-0.5 text-[0.65rem] font-bold`}>{counts[k]} live</span>}
               </div>
               <p className="mt-3 font-serif text-lg sm:text-xl font-bold">{m.label}</p>
               <p className="text-xs text-muted-foreground">{m.tag}</p>
-              <span className={`mt-3 inline-flex items-center gap-1 text-xs font-bold ${m.text}`}><Plus className="h-3.5 w-3.5" />Post</span>
+              <span className={`mt-3 inline-flex items-center gap-1 text-xs font-bold ${m.text}`}>Open →</span>
             </button>
           );
         })}
       </section>
+      </>)}
 
       {/* Filters */}
       <section className="sticky top-14 z-20 mt-6 -mx-4 px-4 py-2 bg-background/80 backdrop-blur-xl">
