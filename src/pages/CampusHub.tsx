@@ -41,7 +41,7 @@ const MODE_INFO: Record<Kind, { title: string; accent: string; steps: [string, s
 };
 
 // ---------- Mode-specific helpers ----------
-const URG = ["Right now", "In 1 hour", "Today"];
+const URG = ["Right now", "Within 1 hour", "Today"];
 const urgRank = (p: any) => { const i = URG.indexOf(p.payload?.urgency); return i < 0 ? 9 : i; };
 const perHead = (p: any) => p.payload?.fare ? Number(p.payload.fare) / ((p.payload.seats || 1) + 1) : 9e9;
 const subKey = (p: any): string => {
