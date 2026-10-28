@@ -5,3 +5,6 @@
 - [x] Campus Hub: Radar, Food Buddy, Borrow SOS, Gigs, Creators, Ride Share (/campus)
 - [x] Secret Crush vault (/crush)
 - [ ] Blind Match, Campus Swipe — later, after safety tools + more users
+
+- [ ] Google Search Console: publish verification tag, verify, submit sitemap
+- [ ] First ad campaign (brief exists; next: pick platform)
