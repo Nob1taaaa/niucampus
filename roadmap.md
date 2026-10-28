@@ -7,4 +7,4 @@
 - [ ] Blind Match, Campus Swipe — later, after safety tools + more users
 
 - [ ] Google Search Console: publish verification tag, verify, submit sitemap
-- [ ] First ad campaign (brief exists; next: pick platform)
+- [ ] First ad campaign on Instagram (Meta) — user chose Instagram over Google
