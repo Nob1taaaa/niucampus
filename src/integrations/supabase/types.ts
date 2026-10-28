@@ -1176,6 +1176,10 @@ export type Database = {
         Args: { _function_name: string; _user_id: string }
         Returns: number
       }
+      is_study_group_member: {
+        Args: { _group: string; _user: string }
+        Returns: boolean
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1197,6 +1201,13 @@ export type Database = {
           message: Json
           msg_id: number
           read_ct: number
+        }[]
+      }
+      study_group_member_counts: {
+        Args: never
+        Returns: {
+          group_id: string
+          members: number
         }[]
       }
     }
