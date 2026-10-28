@@ -6,5 +6,5 @@
 - [x] Secret Crush vault (/crush)
 - [ ] Blind Match, Campus Swipe — later, after safety tools + more users
 
-- [ ] Google Search Console: publish verification tag, verify, submit sitemap
+- [x] Google Search Console: verified, sitemap submitted (2026-10-28)
 - [ ] First ad campaign on Instagram (Meta) — user chose Instagram over Google
