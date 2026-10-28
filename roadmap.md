@@ -7,4 +7,5 @@
 - [ ] Blind Match, Campus Swipe — later, after safety tools + more users
 
 - [x] Google Search Console: verified, sitemap submitted (2026-10-28)
-- [ ] First ad campaign on Instagram (Meta) — user chose Instagram over Google
+- [ ] First ad campaign on Instagram (Meta) — user chose Instagram over Google — blocked: Meta sign-in card not completed yet
+- [ ] Pitch deck for NIU Connect (format pending user answer)
