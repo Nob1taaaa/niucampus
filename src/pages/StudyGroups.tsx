@@ -56,10 +56,10 @@ const StudyGroupsPage = () => {
       if (error) throw error;
       setGroups(data || []);
       if (data && data.length > 0) {
-        const { data: members, error: membersError } = await supabase.from("study_group_members").select("group_id");
+        const { data: members, error: membersError } = await (supabase as any).rpc("study_group_member_counts");
         if (!membersError && members) {
           const counts: Record<string, number> = {};
-          members.forEach((m) => { counts[m.group_id] = (counts[m.group_id] || 0) + 1; });
+          (members as any[]).forEach((m) => { counts[m.group_id] = Number(m.members); });
           setMemberCounts(counts);
         }
       }
